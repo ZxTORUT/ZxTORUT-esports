@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZxTORUT eSPORTS - Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        /* Base Reset & Theme */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f0f2f5; background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px); background-size: 30px 30px; color: #111; font-family: 'Inter', sans-serif; min-height: 100vh; padding-bottom: 120px; overflow-x: hidden; }
+
+        /* STRICT GLOBAL SVG LOCK */
+        svg { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+        .skeleton { background: #e2e8f0; background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%); background-size: 400% 100%; animation: skeleton-loading 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite; border-radius: 8px; color: transparent !important; pointer-events: none; }
+        .skeleton * { visibility: hidden; }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* --- HEADER --- */
+        header { position: sticky; top: 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center; margin: 0 16px 24px 16px; padding: 10px 14px 10px 10px; background: #ffffff; border: 3px solid #111; border-radius: 40px; box-shadow: 0 12px 25px rgba(0,0,0,0.08), 0 6px 0px rgba(17, 17, 17, 0.15); transform: translate3d(0, -150%, 0); transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1); }
+        header.show { transform: translate3d(0, 0, 0); }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+
+        .logo-box { width: 46px !important; height: 46px !important; min-width: 46px !important; border-radius: 50% !important; background: #fff; border: 2.5px solid #111; box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15); display: flex !important; justify-content: center; align-items: center; position: relative !important; overflow: hidden !important; flex-shrink: 0; }
+        .logo-box img { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 50% !important; position: absolute !important; top: 0 !important; left: 0 !important; opacity: 0; transition: opacity 0.5s ease; }
+
+        .user-greeting { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .user-name { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 900; color: #111; min-width: 90px; letter-spacing: -0.5px; }
+        
+        .balance-box { display: inline-flex; align-items: center; gap: 6px; background: #f8f9fa; border: 2px solid #111; padding: 8px 14px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; color: #6366f1; min-width: 70px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .balance-box svg { width: 18px; height: 18px; stroke-width: 2.5; } /* FIXED WALLET ICON SIZE */
+
+        /* --- CARDS & LAYOUT --- */
+        .container { padding: 0 20px; }
+        .card { background: #ffffff; border: 3px solid #111; border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 6px 6px 0px rgba(17, 17, 17, 0.15); transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.2s; }
+        .card.clickable { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; }
+        .card.clickable:active { transform: scale(0.97) translate3d(0,0,0); box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15); }
+        .card.clickable > svg { width: 24px; height: 24px; stroke: #111; stroke-width: 3; }
+        
+        .card-title { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 900; margin-bottom: 16px; color: #111; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .card-title svg { width: 22px; height: 22px; stroke: #6366f1; stroke-width: 2.5; }
+        .clickable .card-title { margin-bottom: 0; font-size: 16px; }
+
+        .info-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1.5px dashed #e2e8f0; }
+        .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .info-label { font-size: 12px; color: #64748b; font-weight: 800; text-transform: uppercase; margin: 0; }
+        .info-val { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: #111; display: flex; align-items: center; gap: 8px; }
+        .info-val.email-text { font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 700; color: #333; }
+
+        .copy-icon { cursor: pointer; color: #6366f1; background: #e0e7ff; border: 1.5px solid #6366f1; border-radius: 8px; padding: 6px 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+        .copy-icon:active { transform: scale(0.9); }
+        .copy-icon svg { width: 14px; height: 14px; stroke-width: 2.5; }
+
+        /* Forms & Buttons */
+        .input-group { margin-bottom: 16px; width: 100%; text-align: left; }
+        input, textarea { width: 100%; padding: 16px; background: #f8f9fa; border: 2.5px solid #e2e8f0; border-radius: 16px; font-size: 15px; font-weight: 600; color: #111; transition: all 0.3s ease; outline: none; font-family: 'Inter', sans-serif; }
+        textarea { resize: none; min-height: 100px; }
+        input:focus, textarea:focus { border-color: #6366f1; background: #fff; }
+        input[readonly] { background: #e2e8f0; color: #64748b; pointer-events: none; border-color: #cbd5e1; }
+        
+        .btn { width: 100%; padding: 16px; background: #6366f1; color: #ffffff; border-radius: 16px; border: 3px solid #111; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.2); transition: transform 0.1s; margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn:active { transform: scale(0.97); box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.2); }
+        .btn svg { width: 20px; height: 20px; stroke-width: 2.5; }
+
+        .invite-box { background: #111; color: #fff; border-color: #111; }
+        .invite-box .card-title { color: #fff; }
+        .invite-desc { font-size: 14px; color: #cbd5e1; font-weight: 600; margin-bottom: 16px; line-height: 1.5; }
+        .invite-btn { background: #fff; color: #111; box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.2); border-color: #fff; }
+        .invite-btn svg { stroke: #111; }
+
+        /* --- POPUPS --- */
+        .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 2000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .popup-overlay.show { opacity: 1; pointer-events: auto; }
+        .popup-sheet { background: #ffffff; width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 35px 35px 0 0; border: 3px solid #111; border-bottom: none; text-align: center; transform: translate3d(0, 100%, 0); transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1); display: flex; flex-direction: column; align-items: center; max-height: 90vh; overflow-y: auto; }
+        .popup-overlay.show .popup-sheet { transform: translate3d(0, 0, 0); }
+        .popup-sheet::-webkit-scrollbar { width: 4px; }
+        .popup-sheet::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .popup-msg { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: #111; margin-bottom: 8px; width: 100%; }
+
+        .tick-circle { width: 60px; height: 60px; border-radius: 50%; border: 3.5px solid #34C759; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; }
+        .tick-circle.error { border-color: #ef4444; }
+        .tick-circle.info { border-color: #6366f1; }
+        .tick-circle svg { width: 30px; height: 30px; stroke-width: 3.5; }
+        .tick-circle.success svg { stroke: #34C759; }
+        .tick-circle.error svg { stroke: #ef4444; }
+        .tick-circle.info svg { stroke: #6366f1; }
+        .popup-overlay.show .tick-circle svg { stroke-dasharray: 50; stroke-dashoffset: 50; animation: dash 0.6s cubic-bezier(0.32, 0.72, 0, 1) 0.3s forwards; }
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+
+        /* PERFECT QR BOX */
+        .qr-box { width: 200px; height: 200px; background: #fff; border: 3px solid #111; border-radius: 20px; margin: 20px auto; display: flex; justify-content: center; align-items: center; box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.15); overflow: hidden; padding: 0; }
+        .qr-box canvas { width: 100% !important; height: 100% !important; display: block; border-radius: 16px; }
+        
+        .refer-code-box { background: #f8f9fa; padding: 16px 20px; border-radius: 16px; border: 2.5px solid #e2e8f0; margin-bottom: 24px; color: #111; width: 100%; cursor: pointer; transition: transform 0.1s, border-color 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center;}
+        .refer-code-box:active { transform: scale(0.97); border-color: #6366f1; }
+        .ref-code-value { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #111; }
+        .ref-code-hint { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-top: 4px; }
+        
+        .refer-terms { font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 20px; }
+        .refer-terms span { color: #34C759; font-weight: 900; }
+        
+        .btn-cancel { width: 100%; padding: 14px; background: transparent; color: #64748b; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; cursor: pointer; margin-top: 0; }
+
+        /* Sliders */
+        .slide-container { position: relative; width: 100%; height: 68px; background: #f1f5f9; border: 3px solid #111; border-radius: 40px; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 4px 8px rgba(0,0,0,0.05); margin-top: 10px; flex-shrink: 0; }
+        .slide-container.danger { background: #fef2f2; border-color: #ef4444; }
+        .slide-text { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; z-index: 1; pointer-events: none; background: linear-gradient(90deg, #64748b 0%, #0f172a 50%, #64748b 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: textShimmer 2.5s linear infinite; transition: opacity 0.3s ease; }
+        .slide-container.danger .slide-text { background: linear-gradient(90deg, #ef4444 0%, #7f1d1d 50%, #ef4444 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @keyframes textShimmer { to { background-position: 200% center; } }
+        .slide-fill { position: absolute; top: 0; left: 0; bottom: 0; width: 0; background: #6366f1; z-index: 0; border-radius: 40px; }
+        .slide-container.danger .slide-fill { background: #ef4444; }
+        .slide-thumb { position: absolute; left: 6px; top: 6px; bottom: 6px; width: 50px; height: 50px; background: #ffffff; border-radius: 50%; border: 3px solid #111; display: flex; justify-content: center; align-items: center; cursor: grab; z-index: 2; touch-action: none; transform: translate3d(0, 0, 0); will-change: transform; transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1.1); }
+        .slide-thumb.dragging { transition: none; }
+        .slide-thumb svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.5; }
+        .slide-container.danger .slide-thumb svg { stroke: #ef4444; }
+
+        /* Bottom Nav */
+        .bottom-nav-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translate3d(0, 150%, 0); width: 90%; max-width: 400px; background: #ffffff; border: 3px solid #111; border-radius: 28px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 8px 0px rgba(17, 17, 17, 0.15); z-index: 1000; transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1); }
+        .bottom-nav-container.show { transform: translateX(-50%) translate3d(0, 0, 0); }
+        .nav-bubble { position: absolute; top: 8px; bottom: 8px; left: 0; background: #111; border-radius: 20px; z-index: 0; will-change: transform, width; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+        .nav-item { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: #64748b; font-weight: 700; font-size: 11px; padding: 10px 0; border-radius: 20px; }
+        .nav-item svg { width: 22px; height: 22px; stroke-width: 2.5; transition: transform 0.2s; }
+        .nav-item:active svg { transform: scale(0.85); }
+        .nav-item.active { color: #ffffff; }
+        .nav-item.active svg { stroke: #ffffff; fill: rgba(255, 255, 255, 0.15); }
+    </style>
+</head>
+<body>
+
+    <div class="popup-overlay" id="statusOverlay" style="z-index: 2500;">
+        <div class="popup-sheet" style="padding-top: 50px; padding-bottom: 50px;">
+            <div class="tick-circle success" id="statusIcon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></div>
+            <div class="popup-msg" id="statusMessage">Success</div>
+            <div class="info-label" id="statusSub" style="font-size: 14px;">Action completed.</div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="gameIdOverlay" onclick="closePopup('gameIdOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="tick-circle info"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+            <div class="popup-msg">Link Game IDs</div>
+            <div class="info-label" style="margin-bottom: 24px; font-size: 13px; font-weight: 600;">Enter your character IDs for tournament verification.</div>
+            
+            <div class="input-group">
+                <input type="text" id="bgmiId" placeholder="BGMI Character ID" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="text" id="ffId" placeholder="Free Fire Max UID" autocomplete="off">
+            </div>
+            <button class="btn" onclick="saveGameIds()" style="margin-top: 10px;">Save Data</button>
+            <button class="btn-cancel" onclick="closePopupManual('gameIdOverlay')">Close</button>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="supportOverlay" onclick="closePopup('supportOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="tick-circle info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+            <div class="popup-msg">Help & Support</div>
+            <div class="info-label" style="margin-bottom: 20px; font-size: 13px; font-weight: 600;">Describe your issue and we'll fix it</div>
+            
+            <div class="input-group">
+                <input type="text" id="supportGamerId" readonly value="ID: Loading...">
+            </div>
+            <div class="input-group">
+                <textarea id="supportMessage" placeholder="Type your message or complaint here..." rows="4"></textarea>
+                <div style="text-align:right; font-size:11px; color:#64748b; margin-top:6px; font-weight:600;" id="wordCount">0/200 words</div>
+            </div>
+            
+            <div class="slide-container" id="supportSlideContainer">
+                <div class="slide-fill" id="supportSlideFill"></div>
+                <div class="slide-text" id="supportSlideText">Slide to Submit</div>
+                <div class="slide-thumb" id="supportSlideThumb">
+                    <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+                </div>
+            </div>
+            <button class="btn-cancel" onclick="closePopupManual('supportOverlay')">Cancel</button>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="inviteOverlay" onclick="closePopup('inviteOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="tick-circle info"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg></div>
+            <div class="popup-msg">Invite & Earn</div>
+            <div class="info-label" style="margin-bottom: 8px; font-size: 13px; font-weight: 600;">Share this QR code or ID to invite friends.</div>
+            
+            <div class="qr-box" id="qrBox"></div>
+            
+            <div class="refer-code-box" onclick="copyReferral()">
+                <div class="ref-code-value" id="refCodeDisplay">Loading...</div>
+                <div class="ref-code-hint">Tap to copy code</div>
+            </div>
+
+            <div class="refer-terms">You get <span>₹5</span> • Friend gets <span>₹10</span></div>
+            
+            <button class="btn-cancel" onclick="closePopupManual('inviteOverlay')">Done</button>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="logoutOverlay" onclick="closePopup('logoutOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="tick-circle error"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>
+            <div class="popup-msg" style="color: #ef4444;">Sign Out</div>
+            <div class="info-label" style="margin-bottom: 24px; font-size: 13px; font-weight: 600;">Are you sure you want to exit the arena?</div>
+            
+            <div class="slide-container danger" id="logoutSlideContainer">
+                <div class="slide-fill" id="logoutSlideFill"></div>
+                <div class="slide-text" id="logoutSlideText">Slide to Confirm</div>
+                <div class="slide-thumb" id="logoutSlideThumb">
+                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </div>
+            </div>
+            
+            <button class="btn-cancel" style="margin-top: 8px;" onclick="closePopupManual('logoutOverlay')">Cancel</button>
+        </div>
+    </div>
+
+    <header id="islandHeader">
+        <div class="header-left">
+            <div class="logo-box skeleton" id="avatarInitial">
+                <img src="logo.jpg" alt="Logo" id="logo-img">
+            </div>
+            <div>
+                <div class="user-greeting">Player Profile</div>
+                <div class="user-name skeleton" id="header-name">Loading...</div>
+            </div>
+        </div>
+        <div class="balance-box skeleton" id="skeleton-balance">
+            <svg viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+            <span id="balance-text" style="margin-left: 2px;">₹0</span>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div class="card">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Account Details
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">ZxTORUT ID</span>
+                <span class="info-val skeleton" id="profile-gamer-id-wrapper">
+                    <span id="profile-gamer-id-val" style="color: #6366f1;">--</span>
+                    <div class="copy-icon" onclick="copyGamerId()"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Full Name</span>
+                <span class="info-val skeleton" id="profileName">--</span>
+            </div>
+            <div class="info-row" style="margin-bottom: 0;">
+                <span class="info-label">Email Address</span>
+                <span class="info-val email-text skeleton" id="profileEmail">--</span>
+            </div>
+        </div>
+
+        <div class="card clickable" onclick="openPopup('gameIdOverlay')">
+            <div>
+                <div class="card-title" style="margin-bottom: 4px;">Game IDs</div>
+                <div class="info-label" style="margin: 0; font-size: 11px;">Link your BGMI & FF MAX IDs</div>
+            </div>
+            <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="card invite-box">
+            <div class="card-title">Refer & Earn</div>
+            <div class="invite-desc">Invite your squad to the arena. Earn cash straight to your wallet for every successful sign up!</div>
+            <button class="btn invite-btn" onclick="openReferralQR()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M8 12h8M12 8v8"></path></svg>
+                Show QR Code
+            </button>
+        </div>
+
+        <div class="card clickable" onclick="openPopup('supportOverlay')">
+            <div>
+                <div class="card-title" style="margin-bottom: 4px;">Help & Support</div>
+                <div class="info-label" style="margin: 0; font-size: 11px;">Raise a ticket</div>
+            </div>
+            <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="card clickable" style="border-color: #ef4444; background: #fef2f2;" onclick="openPopup('logoutOverlay')">
+            <div class="card-title" style="color: #ef4444; margin: 0; width: 100%; text-align: center;">Sign Out</div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav-container" id="bottomNav">
+        <div class="nav-bubble" id="navBubble"></div>
+        <a href="home.html" class="nav-item" id="nav-home">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </a>
+        <a href="matches.html" class="nav-item" id="nav-matches">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span>Matches</span>
+        </a>
+        <a href="wallet.html" class="nav-item" id="nav-wallet">
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            <span>Wallet</span>
+        </a>
+        <a href="profile.html" class="nav-item active" id="nav-profile">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, get, set, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
+            authDomain: "zxtorut-e.firebaseapp.com",
+            databaseURL: "https://zxtorut-e-default-rtdb.firebaseio.com",
+            projectId: "zxtorut-e",
+            storageBucket: "zxtorut-e.firebasestorage.app",
+            messagingSenderId: "913962754970",
+            appId: "1:913962754970:web:ce2a90972d6cf459f0d023"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUserId = null;
+        let myGamerId = "";
+
+        // --- NAVIGATION BUBBLE ---
+        function updateBubblePosition(activeElement) {
+            if(!activeElement) return;
+            const bubble = document.getElementById('navBubble');
+            const container = document.getElementById('bottomNav');
+            const offsetX = activeElement.getBoundingClientRect().left - container.getBoundingClientRect().left;
+            bubble.style.transform = `translate3d(${offsetX}px, 0, 0)`;
+            bubble.style.width = `${activeElement.getBoundingClientRect().width}px`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { 
+                document.getElementById('islandHeader').classList.add('show');
+                document.getElementById('bottomNav').classList.add('show'); 
+                updateBubblePosition(document.querySelector('.nav-item.active'));
+            }, 100);
+
+            const img = document.getElementById('logo-img');
+            if (img) {
+                img.onload = () => { img.style.opacity = '1'; img.parentElement.classList.remove('skeleton'); };
+                setTimeout(() => { img.style.opacity = '1'; img.parentElement.classList.remove('skeleton'); }, 1000);
+            }
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    const targetUrl = item.getAttribute('href');
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    item.classList.add('active');
+                    updateBubblePosition(item);
+                    if(targetUrl && targetUrl !== '#' && targetUrl !== 'profile.html') {
+                        setTimeout(() => { window.location.href = targetUrl; }, 250); 
+                    }
+                });
+            });
+        });
+
+        // --- UI UTILS ---
+        window.openPopup = (id) => { document.getElementById(id).classList.add('show'); };
+        window.closePopup = (id, e) => { 
+            if(e.target.id === id) {
+                document.getElementById(id).classList.remove('show');
+                if(id === 'supportOverlay' || id === 'logoutOverlay') resetAllSliders();
+            }
+        };
+        window.closePopupManual = (id) => { 
+            document.getElementById(id).classList.remove('show');
+            if(id === 'supportOverlay' || id === 'logoutOverlay') resetAllSliders();
+        };
+        
+        function showStatus(msg, sub, type = 'success') {
+            ['gameIdOverlay', 'supportOverlay', 'inviteOverlay'].forEach(id => document.getElementById(id).classList.remove('show'));
+            document.getElementById('statusMessage').innerText = msg;
+            document.getElementById('statusSub').innerText = sub;
+            
+            const icon = document.getElementById('statusIcon');
+            icon.className = type === 'success' ? 'tick-circle success' : 'tick-circle error';
+            icon.innerHTML = type === 'success' 
+                ? '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>'
+                : '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"></path></svg>';
+
+            const overlay = document.getElementById('statusOverlay');
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 3500);
+        }
+
+        window.copyGamerId = () => {
+            if(myGamerId && myGamerId !== 'Loading...') {
+                navigator.clipboard.writeText(myGamerId).then(() => {
+                    showStatus("Copied", "ZxTORUT ID copied to clipboard.");
+                });
+            }
+        };
+
+        window.copyReferral = () => {
+            if (!myGamerId || myGamerId === 'Loading...') return;
+            const refLink = `https://zxtorut.com/invite?code=${myGamerId}`;
+            navigator.clipboard.writeText(refLink).then(() => {
+                showStatus("Copied", "Invite Link copied to clipboard.");
+            });
+        };
+
+        // --- OPEN QR POPUP ---
+        window.openReferralQR = () => {
+            if (!myGamerId || myGamerId === 'Loading...') {
+                showStatus("Error", "ID not generated yet.", "error");
+                return;
+            }
+
+            document.getElementById('refCodeDisplay').innerText = myGamerId;
+
+            const qrBox = document.getElementById('qrBox');
+            qrBox.innerHTML = ''; 
+
+            // Create Canvas based QR Code Perfectly sized with internal margin
+            const qrCode = new QRCodeStyling({
+                width: 200,
+                height: 200,
+                type: "canvas", 
+                data: `https://zxtorut.com/invite?code=${myGamerId}`,
+                margin: 0,
+                qrOptions: { typeNumber: 0, mode: "Byte", errorCorrectionLevel: "Q" },
+                dotsOptions: { type: "dots", color: "#111" },
+                backgroundOptions: { color: "#fff" },
+                cornersSquareOptions: { type: "extra-rounded", color: "#111" },
+                cornersDotOptions: { type: "dot", color: "#6366f1" }
+            });
+            
+            qrCode.append(qrBox);
+            document.getElementById('inviteOverlay').classList.add('show');
+        };
+
+        document.getElementById('supportMessage').addEventListener('input', function() {
+            let words = this.value.match(/\b[-?(\w+)?]+\b/gi);
+            let count = words ? words.length : 0;
+            if (count > 200) {
+                this.value = words.slice(0, 200).join(" ");
+                count = 200;
+            }
+            document.getElementById('wordCount').innerText = `${count}/200 words`;
+        });
+
+        // --- SLIDER PHYSICS ---
+        const sliders = {};
+        function setupSlider(containerId, thumbId, fillId, textId, actionType) {
+            const container = document.getElementById(containerId);
+            const thumb = document.getElementById(thumbId);
+            const fill = document.getElementById(fillId);
+            const text = document.getElementById(textId);
+            const originalText = text.innerText;
+            
+            sliders[actionType] = () => {
+                thumb.style.transform = `translate3d(0, 0, 0)`;
+                fill.style.width = `0`;
+                text.style.opacity = '1';
+                text.style.webkitTextFillColor = 'transparent';
+                text.innerText = originalText;
+            };
+
+            let isDragging = false, startX = 0, currentX = 0, maxSlide = 0;
+
+            const onStart = (e) => {
+                isDragging = true;
+                maxSlide = container.offsetWidth - thumb.offsetWidth - 12; 
+                startX = (e.touches ? e.touches[0].clientX : e.clientX) - currentX;
+                thumb.classList.add('dragging');
+                text.style.opacity = '0.1';
+            };
+
+            const onMove = (e) => {
+                if (!isDragging) return;
+                currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+                if (currentX < 0) currentX = 0;
+                if (currentX > maxSlide) currentX = maxSlide;
+                thumb.style.transform = `translate3d(${currentX}px, 0, 0)`;
+                fill.style.width = `${currentX + 26}px`; 
+            };
+
+            const onEnd = async () => {
+                if (!isDragging) return;
+                isDragging = false;
+                thumb.classList.remove('dragging');
+                
+                if (currentX >= maxSlide * 0.90) {
+                    currentX = maxSlide;
+                    thumb.style.transform = `translate3d(${maxSlide}px, 0, 0)`;
+                    fill.style.width = `100%`;
+                    text.style.opacity = '1'; text.style.webkitTextFillColor = '#fff';
+
+                    if(actionType === 'logout') {
+                        text.innerText = "Signing Out...";
+                        try {
+                            await signOut(auth);
+                        } catch(err) { sliders[actionType](); }
+                    } 
+                    else if (actionType === 'support') {
+                        const msg = document.getElementById('supportMessage').value.trim();
+                        if (msg.length === 0) {
+                            alert("Please describe your issue.");
+                            sliders[actionType]();
+                            return;
+                        }
+                        text.innerText = "Submitting...";
+                        try {
+                            const reqId = 'req_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+                            await set(ref(db, `support_requests/${reqId}`), {
+                                id: reqId,
+                                uid: currentUserId,
+                                gamerId: document.getElementById('profile-gamer-id-val').innerText,
+                                message: msg,
+                                timestamp: Date.now(),
+                                status: "pending"
+                            });
+                            document.getElementById('supportMessage').value = '';
+                            document.getElementById('wordCount').innerText = '0/200 words';
+                            sliders[actionType]();
+                            showStatus("Request Submitted", "Admin will resolve it within 24 hours.");
+                        } catch(e) {
+                            alert("Failed to send request");
+                            sliders[actionType]();
+                        }
+                    }
+                } else {
+                    sliders[actionType]();
+                }
+            };
+
+            thumb.addEventListener('mousedown', onStart);
+            thumb.addEventListener('touchstart', onStart, {passive: false});
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, {passive: false});
+            window.addEventListener('mouseup', onEnd);
+            window.addEventListener('touchend', onEnd);
+        }
+
+        window.resetAllSliders = () => {
+            Object.values(sliders).forEach(resetFn => resetFn());
+        };
+
+        setupSlider('logoutSlideContainer', 'logoutSlideThumb', 'logoutSlideFill', 'logoutSlideText', 'logout');
+        setupSlider('supportSlideContainer', 'supportSlideThumb', 'supportSlideFill', 'supportSlideText', 'support');
+
+        window.saveGameIds = async () => {
+            const bgmi = document.getElementById('bgmiId').value.trim();
+            const ff = document.getElementById('ffId').value.trim();
+            if(!currentUserId) return;
+            
+            try {
+                await update(ref(db, 'users/' + currentUserId + '/gameIds'), { bgmi: bgmi, ffmax: ff });
+                document.getElementById('gameIdOverlay').classList.remove('show');
+                showStatus("Data Linked", "Game IDs updated successfully.");
+            } catch(e) {
+                alert("Failed to save IDs");
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                const name = user.displayName || user.email.split('@')[0];
+                
+                ['header-name', 'profileName'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.innerText = name; el.classList.remove('skeleton');
+                });
+                
+                const emailEl = document.getElementById('profileEmail');
+                emailEl.innerText = user.email; emailEl.classList.remove('skeleton');
+
+                onValue(ref(db, 'users/' + user.uid + '/balance'), (snapshot) => {
+                    document.getElementById('balance-text').innerText = `₹${snapshot.val() || 0}`;
+                    document.getElementById('skeleton-balance').classList.remove('skeleton');
+                });
+
+                const gamerIdRef = ref(db, 'users/' + user.uid + '/gamerId');
+                get(gamerIdRef).then((snapshot) => {
+                    if(snapshot.exists()) {
+                        myGamerId = snapshot.val();
+                    } else {
+                        myGamerId = Math.floor(1000000 + Math.random() * 9000000).toString();
+                        set(gamerIdRef, myGamerId);
+                    }
+                    
+                    const gIdEl = document.getElementById('profile-gamer-id-wrapper');
+                    gIdEl.classList.remove('skeleton');
+                    document.getElementById('profile-gamer-id-val').innerText = myGamerId;
+                    document.getElementById('supportGamerId').value = `ID: ${myGamerId}`;
+                });
+
+                get(ref(db, 'users/' + user.uid + '/gameIds')).then((snapshot) => {
+                    if(snapshot.exists()) {
+                        const ids = snapshot.val();
+                        document.getElementById('bgmiId').value = ids.bgmi || "";
+                        document.getElementById('ffId').value = ids.ffmax || "";
+                    }
+                });
+
+                // Sync basic data
+                update(ref(db, 'users/' + user.uid), {
+                    email: user.email,
+                    displayName: user.displayName || user.email.split('@')[0]
+                });
+
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

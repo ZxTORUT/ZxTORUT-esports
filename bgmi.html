@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZxTORUT eSPORTS - BGMI Matches</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f0f2f5; background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px); background-size: 30px 30px; color: #111; font-family: 'Inter', sans-serif; min-height: 100vh; padding-bottom: 40px; overflow-x: hidden; }
+
+        .skeleton { background: #e2e8f0; background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%); background-size: 400% 100%; animation: skeleton-loading 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite; border-radius: 8px; color: transparent !important; pointer-events: none; }
+        .skeleton * { visibility: hidden; }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        header { position: sticky; top: 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center; margin: 0 16px 24px 16px; padding: 10px 14px; background: #ffffff; border: 3px solid #111; border-radius: 40px; box-shadow: 0 12px 25px rgba(0,0,0,0.08), 0 6px 0px rgba(17, 17, 17, 0.15); }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .back-btn { width: 40px; height: 40px; border-radius: 50%; background: #f8f9fa; border: 2.5px solid #111; display: flex; justify-content: center; align-items: center; cursor: pointer; text-decoration: none; color: #111; box-shadow: 2px 2px 0px rgba(17,17,17,0.15); transition: transform 0.2s; }
+        .back-btn:active { transform: scale(0.9); }
+        .header-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
+
+        .balance-box { display: inline-flex; align-items: center; gap: 6px; background: #f8f9fa; border: 2px solid #111; padding: 8px 14px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; color: #6366f1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+
+        .container { padding: 0 20px; }
+        
+        .match-card { background: #ffffff; border: 3px solid #111; border-radius: 24px; padding: 20px; margin-bottom: 24px; box-shadow: 6px 6px 0px rgba(17, 17, 17, 0.15); display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .match-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .match-title { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 900; text-transform: uppercase; color: #111; }
+        .match-time { font-size: 12px; font-weight: 700; color: #ef4444; background: #fee2e2; padding: 4px 10px; border-radius: 10px; border: 2px solid #ef4444; }
+
+        .match-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #f8f9fa; border: 2.5px solid #e2e8f0; border-radius: 16px; padding: 12px; text-align: center; }
+        .stat-box span { font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; }
+        .stat-box div { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; color: #111; margin-top: 2px; }
+        .stat-box.highlight div { color: #34C759; }
+
+        .map-info { font-size: 13px; font-weight: 600; color: #64748b; display: flex; justify-content: space-between; }
+        
+        .btn { width: 100%; padding: 16px; background: #6366f1; color: #ffffff; border-radius: 16px; border: 2.5px solid #111; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; text-transform: uppercase; cursor: pointer; box-shadow: 3px 3px 0px rgba(17, 17, 17, 0.3); transition: transform 0.1s, background 0.3s; }
+        .btn:active { transform: scale(0.97); box-shadow: 1px 1px 0px rgba(17, 17, 17, 0.3); }
+        .btn.joined { background: #f8f9fa; color: #34C759; border-color: #34C759; box-shadow: none; pointer-events: none; }
+        .btn.started { background: #fef2f2; color: #ef4444; border-color: #ef4444; box-shadow: none; pointer-events: none; }
+
+        .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 2000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .popup-overlay.show { opacity: 1; pointer-events: auto; }
+        .popup-sheet { background: #ffffff; width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 35px 35px 0 0; border: 3px solid #111; border-bottom: none; text-align: center; transform: translate3d(0, 100%, 0); transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1); max-height: 90vh; overflow-y: auto; }
+        .popup-sheet::-webkit-scrollbar { width: 4px; }
+        .popup-sheet::-webkit-scrollbar-track { background: transparent; }
+        .popup-sheet::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .popup-overlay.show .popup-sheet { transform: translate3d(0, 0, 0); }
+        .popup-msg { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: #111; margin-bottom: 8px; }
+
+        .input-group { margin-bottom: 16px; width: 100%; text-align: left; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        input { width: 100%; padding: 16px; background: #f8f9fa; border: 2.5px solid #e2e8f0; border-radius: 16px; font-size: 15px; font-weight: 600; color: #111; outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
+        input:focus { border-color: #111; background: #fff; }
+        input[readonly] { background: #e2e8f0; color: #64748b; pointer-events: none; border-color: #cbd5e1; }
+        
+        .valid-tick { position: absolute; right: 16px; display: flex; align-items: center; justify-content: center; }
+        .valid-tick svg { width: 20px; height: 20px; stroke: #3b82f6; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .valid-loading { width: 16px; height: 16px; border: 3px solid #e2e8f0; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite; }
+        .error-text { font-size: 11px; font-weight: 700; color: #ef4444; margin-top: 6px; display: none; }
+
+        .team-section { background: #f1f5f9; border: 2.5px dashed #cbd5e1; border-radius: 16px; padding: 16px; margin-bottom: 20px; display: none; }
+        .team-title { font-size: 13px; font-weight: 800; color: #111; text-transform: uppercase; margin-bottom: 12px; text-align: left; }
+
+        .custom-checkbox { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; font-weight: 600; color: #111; text-align: left; cursor: pointer; margin-bottom: 20px; padding: 12px; background: #e0e7ff; border: 2px solid #6366f1; border-radius: 12px; }
+        .custom-checkbox input { width: 18px; height: 18px; accent-color: #6366f1; cursor: pointer; margin-top: 2px; flex-shrink: 0; }
+
+        .finance-box { background: #f8f9fa; border: 2.5px solid #111; border-radius: 16px; padding: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+        .finance-col span { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        .finance-col div { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 900; color: #111; margin-top: 4px; transition: color 0.3s; }
+        .finance-col.deduct div { color: #ef4444; }
+
+        .slide-container { position: relative; width: 100%; height: 64px; background: #f1f5f9; border: 3px solid #111; border-radius: 40px; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 4px 8px rgba(0,0,0,0.05); }
+        .slide-text { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; z-index: 1; pointer-events: none; background: linear-gradient(90deg, #64748b 0%, #0f172a 50%, #64748b 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: textShimmer 2.5s linear infinite; }
+        @keyframes textShimmer { to { background-position: 200% center; } }
+        .slide-fill { position: absolute; top: 0; left: 0; bottom: 0; width: 0; background: #6366f1; z-index: 0; border-radius: 40px; transition: background 0.3s; }
+        .slide-fill.pay-all { background: #111; }
+        .slide-thumb { position: absolute; left: 6px; top: 6px; bottom: 6px; width: 48px; height: 48px; background: #ffffff; border-radius: 50%; border: 3px solid #111; display: flex; justify-content: center; align-items: center; cursor: grab; z-index: 2; touch-action: none; transform: translate3d(0, 0, 0); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1.1); }
+        .slide-thumb.dragging { transition: none; }
+        .slide-thumb svg { width: 22px; height: 22px; stroke: #111; stroke-width: 2.5; fill: none; }
+
+        .tick-circle { width: 60px; height: 60px; border-radius: 50%; border: 3.5px solid #34C759; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; }
+        .tick-circle.error { border-color: #ef4444; }
+        .tick-circle svg { width: 30px; height: 30px; fill: none; stroke: #34C759; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 50; stroke-dashoffset: 50; transition: stroke-dashoffset 0.6s cubic-bezier(0.32, 0.72, 0, 1) 0.3s; }
+        .tick-circle.error svg { stroke: #ef4444; }
+        .popup-overlay.show .tick-circle svg { stroke-dashoffset: 0; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: #64748b; font-weight: 600; font-size: 15px; border: 3px dashed #cbd5e1; border-radius: 20px; margin-top: 20px;}
+    </style>
+</head>
+<body>
+
+    <div class="popup-overlay" id="statusOverlay">
+        <div class="popup-sheet">
+            <div class="tick-circle" id="statusIcon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></div>
+            <div class="popup-msg" id="statusMessage">Success</div>
+            <div style="font-size: 14px; font-weight: 600; color: #64748b;" id="statusSub">Action completed.</div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="joinMatchOverlay" onclick="closePopup('joinMatchOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="popup-msg">Confirm Join</div>
+            <div style="margin-bottom: 24px; font-size: 13px; font-weight: 600; color: #64748b;">Verify your details to secure your slot</div>
+            
+            <div class="input-group">
+                <input type="text" id="joinZxtorutId" readonly value="ZxTORUT ID: Loading...">
+            </div>
+            <div class="input-group">
+                <input type="text" id="joinBgmiId" placeholder="Enter Your BGMI Character ID" autocomplete="off">
+            </div>
+
+            <div class="team-section" id="teamSection">
+                <div class="team-title" id="teamSectionTitle">Teammate Details</div>
+                
+                <label class="custom-checkbox" id="requestCheckboxLabel">
+                    <input type="checkbox" id="sendRequestCheck" onchange="updateJoinUI()">
+                    <span>Send payment requests to verified ZxTORUT teammates. You will pay for yourself and any unverified Game IDs.</span>
+                </label>
+
+                <div class="input-group" id="tm1-group" style="display: none;">
+                    <div class="input-wrapper">
+                        <input type="text" id="tm1-input" placeholder="Teammate 1 (ZxTORUT ID or Game ID)">
+                        <div class="valid-tick" id="tm1-icon"></div>
+                    </div>
+                    <div class="error-text" id="tm1-error">User not joined in ZxTORUT eSPORTS</div>
+                </div>
+                
+                <div class="input-group" id="tm2-group" style="display: none;">
+                    <div class="input-wrapper">
+                        <input type="text" id="tm2-input" placeholder="Teammate 2 (ZxTORUT ID or Game ID)">
+                        <div class="valid-tick" id="tm2-icon"></div>
+                    </div>
+                    <div class="error-text" id="tm2-error">User not joined in ZxTORUT eSPORTS</div>
+                </div>
+
+                <div class="input-group" id="tm3-group" style="display: none; margin-bottom: 0;">
+                    <div class="input-wrapper">
+                        <input type="text" id="tm3-input" placeholder="Teammate 3 (ZxTORUT ID or Game ID)">
+                        <div class="valid-tick" id="tm3-icon"></div>
+                    </div>
+                    <div class="error-text" id="tm3-error">User not joined in ZxTORUT eSPORTS</div>
+                </div>
+            </div>
+
+            <div class="finance-box">
+                <div class="finance-col">
+                    <span>Wallet Balance</span>
+                    <div id="joinCurrentBalance">₹0</div>
+                </div>
+                <div class="finance-col deduct" style="text-align: right;">
+                    <span id="feeLabel">Entry Fee</span>
+                    <div id="joinEntryFee">-₹0</div>
+                </div>
+            </div>
+            
+            <div class="slide-container" id="joinSlideContainer">
+                <div class="slide-fill" id="joinSlideFill"></div>
+                <div class="slide-text" id="joinSlideText">Slide to Join</div>
+                <div class="slide-thumb" id="joinSlideThumb">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="disclaimerOverlay">
+        <div class="popup-sheet">
+            <div class="popup-msg" style="color: #ef4444;">Warning!</div>
+            <div style="color: #111; font-weight: 600; line-height: 1.6; margin-bottom: 16px; font-size: 14px; text-align: left; background: #fef2f2; padding: 16px; border-radius: 16px; border: 2px solid #fca5a5;">
+                After joining the match you are <b>not able to cancel</b> and not able to leave. Refund not given until match is cancelled by ZxTORUT eSPORTS.<br><br>
+                <span style="color: #ef4444;">You still have a chance to exit.</span>
+            </div>
+            
+            <div id="timerText" style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 900; color: #ef4444; margin-bottom: 20px;">
+                Auto-joining in 5s...
+            </div>
+            
+            <button class="btn" style="background: #ef4444; border-color: #7f1d1d; box-shadow: 3px 3px 0px rgba(239, 68, 68, 0.3);" onclick="cancelJoin()">Cancel Join</button>
+            
+            <label class="custom-checkbox" style="background: transparent; border: none; padding: 0;">
+                <input type="checkbox" id="skipDisclaimerCheck"> Don't show this disclaimer again
+            </label>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-left">
+            <a href="home.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+            <div class="header-title">BGMI ARENA</div>
+        </div>
+        <div class="balance-box skeleton" id="skeleton-balance">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+            </svg>
+            <span id="balance-text" style="margin-left: 2px;">₹0</span>
+        </div>
+    </header>
+
+    <main class="container arena-section" id="matchesContainer">
+        <div class="match-card skeleton" style="height: 350px;"></div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, get, set, update, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
+            authDomain: "zxtorut-e.firebaseapp.com",
+            databaseURL: "https://zxtorut-e-default-rtdb.firebaseio.com",
+            projectId: "zxtorut-e",
+            storageBucket: "zxtorut-e.firebasestorage.app",
+            messagingSenderId: "913962754970",
+            appId: "1:913962754970:web:ce2a90972d6cf459f0d023"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUserId = null;
+        let currentUserDisplayName = "Player";
+        let userBalance = 0;
+        let userBgmiId = "";
+        let myGamerId = "";
+        let skipDisclaimerPref = false;
+
+        let liveMatches = {};
+        let userJoinedMatches = {};
+        
+        let activeMatchId = null;
+        let activeEntryFee = 0;
+        let activeTeamSize = 1;
+        let activeTotalFee = 0;
+        let activeTeammatesData = []; 
+        let isSendingRequests = false;
+        let disclaimerTimerInterval = null;
+
+        window.closePopup = (id, e) => { 
+            if(e.target.id === id) {
+                document.getElementById(id).classList.remove('show');
+                if(id === 'joinMatchOverlay') resetJoinSlider();
+            }
+        };
+
+        window.showStatus = (msg, sub, type = 'success') => {
+            document.getElementById('statusMessage').innerText = msg;
+            document.getElementById('statusSub').innerText = sub;
+            const icon = document.getElementById('statusIcon');
+            icon.className = type === 'success' ? 'tick-circle' : 'tick-circle error';
+            icon.innerHTML = type === 'success' 
+                ? '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>'
+                : '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"></path></svg>';
+            
+            const overlay = document.getElementById('statusOverlay');
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 3000);
+        };
+
+        function renderMatches() {
+            const container = document.getElementById('matchesContainer');
+            container.innerHTML = ''; 
+            const now = Date.now();
+            let hasVisibleMatches = false;
+
+            for (const [matchId, match] of Object.entries(liveMatches)) {
+                if (match.status === 'finished') continue;
+
+                const isStarted = match.startTimestamp <= now || match.status === 'started';
+                const isJoined = userJoinedMatches[matchId];
+
+                if (isStarted && !isJoined) continue;
+
+                hasVisibleMatches = true;
+                let btnHTML = `<button class="btn" onclick="initiateJoin('${matchId}')">Join Match</button>`;
+                
+                if (isStarted && isJoined) {
+                    btnHTML = `<button class="btn started">Match Started</button>`;
+                } else if (isJoined) {
+                    btnHTML = `<button class="btn joined">Joined - Ready for Battlefield</button>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.innerHTML = `
+                    <div class="match-header">
+                        <div class="match-title">${match.title}</div>
+                        <div class="match-time">${match.timeText}</div>
+                    </div>
+                    <div class="map-info">
+                        <span>Map: ${match.map}</span>
+                        <span>Type: ${match.type}</span>
+                    </div>
+                    <div class="match-stats">
+                        <div class="stat-box highlight"><span>Prize Pool</span><div>₹${match.prizePool}</div></div>
+                        <div class="stat-box"><span>Per Kill</span><div>₹${match.perKill}</div></div>
+                        <div class="stat-box"><span>Entry Fee</span><div>₹${match.entryFee}</div></div>
+                    </div>
+                    <div class="map-info" style="margin-top: -5px;">
+                        <span style="color: #111;">Spots: ${match.spotsFilled || 0}/${match.totalSpots}</span>
+                    </div>
+                    ${btnHTML}
+                `;
+                container.appendChild(card);
+            }
+
+            if (!hasVisibleMatches) {
+                container.innerHTML = `<div class="empty-state">No Tournaments available right now.</div>`;
+            }
+        }
+        setInterval(renderMatches, 10000);
+
+        let debounceTimer;
+        window.validateTeammate = async (inputNum) => {
+            clearTimeout(debounceTimer);
+            const val = document.getElementById(`tm${inputNum}-input`).value.trim();
+            const iconBox = document.getElementById(`tm${inputNum}-icon`);
+            const errorTxt = document.getElementById(`tm${inputNum}-error`);
+
+            if (!val) { 
+                iconBox.innerHTML = ''; 
+                errorTxt.style.display = 'none'; 
+                document.getElementById(`tm${inputNum}-input`).removeAttribute('data-verified-uid');
+                window.updateJoinUI();
+                return; 
+            }
+
+            iconBox.innerHTML = '<div class="valid-loading"></div>';
+            
+            debounceTimer = setTimeout(async () => {
+                if (val === myGamerId) {
+                    iconBox.innerHTML = '';
+                    errorTxt.innerText = "You cannot enter your own ZxTORUT ID.";
+                    errorTxt.style.display = 'block';
+                    document.getElementById(`tm${inputNum}-input`).removeAttribute('data-verified-uid');
+                    window.updateJoinUI();
+                    return;
+                }
+
+                try {
+                    const uQuery = query(ref(db, 'users'), orderByChild('gamerId'), equalTo(val));
+                    const snapshot = await get(uQuery);
+                    
+                    if (snapshot.exists()) {
+                        iconBox.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                        errorTxt.style.display = 'none';
+                        document.getElementById(`tm${inputNum}-input`).setAttribute('data-verified-uid', Object.keys(snapshot.val())[0]);
+                    } else {
+                        iconBox.innerHTML = '';
+                        errorTxt.innerText = "User not joined in ZxTORUT eSPORTS";
+                        errorTxt.style.display = 'block';
+                        document.getElementById(`tm${inputNum}-input`).removeAttribute('data-verified-uid');
+                    }
+                } catch(e) {
+                    iconBox.innerHTML = '';
+                    document.getElementById(`tm${inputNum}-input`).removeAttribute('data-verified-uid');
+                }
+                
+                window.updateJoinUI();
+                
+            }, 500); 
+        };
+
+        [1, 2, 3].forEach(i => {
+            document.getElementById(`tm${i}-input`).addEventListener('input', () => validateTeammate(i));
+        });
+
+        window.initiateJoin = (matchId) => {
+            if(!currentUserId) return;
+            const match = liveMatches[matchId];
+            if (!match) return;
+
+            activeMatchId = matchId;
+            activeEntryFee = parseInt(match.entryFee);
+            
+            const mType = match.type.toLowerCase();
+            if (mType.includes('squad')) activeTeamSize = 4;
+            else if (mType.includes('duo')) activeTeamSize = 2;
+            else activeTeamSize = 1;
+
+            document.getElementById('joinBgmiId').value = userBgmiId;
+            document.getElementById('sendRequestCheck').checked = false;
+            [1, 2, 3].forEach(i => {
+                document.getElementById(`tm${i}-input`).value = '';
+                document.getElementById(`tm${i}-input`).removeAttribute('data-verified-uid');
+                document.getElementById(`tm${i}-icon`).innerHTML = '';
+                document.getElementById(`tm${i}-error`).style.display = 'none';
+            });
+
+            const tSec = document.getElementById('teamSection');
+            if (activeTeamSize > 1) {
+                tSec.style.display = 'block';
+                document.getElementById('tm1-group').style.display = 'block';
+                if (activeTeamSize === 4) {
+                    document.getElementById('tm2-group').style.display = 'block';
+                    document.getElementById('tm3-group').style.display = 'block';
+                } else {
+                    document.getElementById('tm2-group').style.display = 'none';
+                    document.getElementById('tm3-group').style.display = 'none';
+                }
+            } else {
+                tSec.style.display = 'none';
+            }
+
+            window.updateJoinUI();
+            document.getElementById('joinMatchOverlay').classList.add('show');
+        };
+
+        window.updateJoinUI = () => {
+            isSendingRequests = document.getElementById('sendRequestCheck').checked;
+            
+            let verifiedCount = 0;
+            if (activeTeamSize > 1) {
+                const reqCount = activeTeamSize - 1;
+                for (let i = 1; i <= reqCount; i++) {
+                    if (document.getElementById(`tm${i}-input`).getAttribute('data-verified-uid')) {
+                        verifiedCount++;
+                    }
+                }
+            }
+
+            if (isSendingRequests) {
+                const payingSpots = activeTeamSize - verifiedCount;
+                activeTotalFee = payingSpots * activeEntryFee;
+                document.getElementById('feeLabel').innerText = `Your Fee (x${payingSpots})`;
+            } else {
+                activeTotalFee = activeEntryFee * activeTeamSize;
+                document.getElementById('feeLabel').innerText = `Total Fee (x${activeTeamSize})`;
+            }
+
+            document.getElementById('joinCurrentBalance').innerText = `₹${userBalance}`;
+            const feeEl = document.getElementById('joinEntryFee');
+            feeEl.innerText = `-₹${activeTotalFee}`;
+            
+            if (userBalance < activeTotalFee) feeEl.style.color = '#ef4444';
+            else feeEl.style.color = '#111';
+
+            const sFill = document.getElementById('joinSlideFill');
+            const sText = document.getElementById('joinSlideText');
+            
+            if (isSendingRequests && verifiedCount > 0) {
+                sFill.className = 'slide-fill';
+                sText.innerText = "Slide to Pay & Request";
+            } else {
+                sFill.className = 'slide-fill pay-all';
+                sText.innerText = `Slide to Pay ₹${activeTotalFee}`;
+            }
+        };
+
+        window.processJoinSwipe = async () => {
+            const enteredBgmiId = document.getElementById('joinBgmiId').value.trim();
+            if (!enteredBgmiId) { alert("Please enter your BGMI Character ID."); resetJoinSlider(); return; }
+
+            if (userBalance < activeTotalFee) {
+                alert("Insufficient funds in wallet.");
+                resetJoinSlider(); return;
+            }
+
+            activeTeammatesData = [];
+            if (activeTeamSize > 1) {
+                const reqCount = activeTeamSize - 1;
+                for (let i = 1; i <= reqCount; i++) {
+                    const inputEl = document.getElementById(`tm${i}-input`);
+                    const val = inputEl.value.trim();
+                    const verifiedUid = inputEl.getAttribute('data-verified-uid');
+
+                    if (!val) {
+                        alert(`Please fill details for Teammate ${i}.`);
+                        resetJoinSlider(); return;
+                    }
+
+                    activeTeammatesData.push({ idText: val, uid: verifiedUid || null });
+                }
+            }
+
+            if(enteredBgmiId !== userBgmiId) {
+                userBgmiId = enteredBgmiId;
+                update(ref(db, 'users/' + currentUserId + '/gameIds'), { bgmi: enteredBgmiId }).catch(()=>{});
+            }
+
+            document.getElementById('joinMatchOverlay').classList.remove('show');
+            resetJoinSlider();
+
+            if (skipDisclaimerPref) executeFinalJoin();
+            else startDisclaimerTimer();
+        };
+
+        function startDisclaimerTimer() {
+            document.getElementById('disclaimerOverlay').classList.add('show');
+            let timeLeft = 5;
+            document.getElementById('timerText').innerText = `Auto-joining in ${timeLeft}s...`;
+            
+            disclaimerTimerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerText').innerText = `Auto-joining in ${timeLeft}s...`;
+                if (timeLeft <= 0) {
+                    clearInterval(disclaimerTimerInterval);
+                    executeFinalJoin();
+                }
+            }, 1000);
+        }
+
+        window.cancelJoin = () => {
+            clearInterval(disclaimerTimerInterval);
+            document.getElementById('disclaimerOverlay').classList.remove('show');
+            window.showStatus("Cancelled", "Match join cancelled.");
+        };
+
+        async function executeFinalJoin() {
+            document.getElementById('disclaimerOverlay').classList.remove('show');
+
+            const isChecked = document.getElementById('skipDisclaimerCheck').checked;
+            if (isChecked && !skipDisclaimerPref) {
+                skipDisclaimerPref = true;
+                update(ref(db, 'users/' + currentUserId + '/preferences'), { skipDisclaimer: true }).catch(()=>{});
+            }
+
+            try {
+                const newBalance = userBalance - activeTotalFee;
+                let updates = {};
+                updates[`users/${currentUserId}/balance`] = newBalance;
+                
+                const joinData = { 
+                    timestamp: Date.now(), 
+                    paidForTeam: !isSendingRequests,
+                    teammates: activeTeammatesData
+                };
+                updates[`users/${currentUserId}/joined_matches/bgmi/${activeMatchId}`] = joinData;
+                
+                // --- FIXED: ADD DIGITAL RECEIPT TO WALLET HISTORY ---
+                if (activeTotalFee > 0) {
+                    const txnId = 'txn_' + Date.now();
+                    const matchTitle = liveMatches[activeMatchId] ? liveMatches[activeMatchId].title : "Match Entry";
+                    updates[`users/${currentUserId}/transactions/${txnId}`] = {
+                        title: matchTitle,
+                        type: "join",
+                        amount: -activeTotalFee,
+                        method: "Wallet Auto",
+                        status: "success",
+                        timestamp: Date.now(),
+                        closingBalance: newBalance,
+                        txnRef: `ENTRY-${activeMatchId.slice(-6)}`
+                    };
+                }
+                
+                if (isSendingRequests && activeTeammatesData.length > 0) {
+                    activeTeammatesData.forEach(tm => {
+                        if (tm.uid) { 
+                            const reqId = 'req_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+                            updates[`game_requests/${tm.uid}/${reqId}`] = {
+                                matchId: activeMatchId,
+                                game: 'bgmi',
+                                fromName: currentUserDisplayName,
+                                fromUid: currentUserId,
+                                fee: activeEntryFee,
+                                timestamp: Date.now(),
+                                status: 'pending'
+                            };
+                        }
+                    });
+                }
+
+                const matchData = liveMatches[activeMatchId];
+                if(matchData) {
+                    const spotsToAdd = activeTotalFee / activeEntryFee; 
+                    updates[`matches/bgmi/${activeMatchId}/spotsFilled`] = (matchData.spotsFilled || 0) + spotsToAdd;
+                }
+
+                await update(ref(db), updates);
+
+                if (isSendingRequests) window.showStatus("Joined & Sent!", "Paid your share and sent requests.");
+                else window.showStatus("Joined!", "Your squad is fully paid and ready.");
+
+            } catch(e) {
+                window.showStatus("Error", "Failed to join match.", "error");
+            }
+        }
+
+        let joinSliderThumb, joinSliderContainer, joinSliderFill, joinSliderText, maxSlide = 0;
+        function setupJoinSlider() {
+            joinSliderContainer = document.getElementById('joinSlideContainer');
+            joinSliderThumb = document.getElementById('joinSlideThumb');
+            joinSliderFill = document.getElementById('joinSlideFill');
+            joinSliderText = document.getElementById('joinSlideText');
+            
+            let isDragging = false, startX = 0, currentX = 0;
+
+            const onStart = (e) => {
+                isDragging = true;
+                maxSlide = joinSliderContainer.offsetWidth - joinSliderThumb.offsetWidth - 12; 
+                startX = (e.touches ? e.touches[0].clientX : e.clientX) - currentX;
+                joinSliderThumb.classList.add('dragging');
+                joinSliderText.style.opacity = '0.1';
+            };
+
+            const onMove = (e) => {
+                if (!isDragging) return;
+                currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+                if (currentX < 0) currentX = 0;
+                if (currentX > maxSlide) currentX = maxSlide;
+                joinSliderThumb.style.transform = `translate3d(${currentX}px, 0, 0)`;
+                joinSliderFill.style.width = `${currentX + 26}px`; 
+            };
+
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                joinSliderThumb.classList.remove('dragging');
+                
+                if (currentX >= maxSlide * 0.90) {
+                    currentX = maxSlide;
+                    joinSliderThumb.style.transform = `translate3d(${maxSlide}px, 0, 0)`;
+                    joinSliderFill.style.width = `100%`;
+                    joinSliderText.style.opacity = '1'; joinSliderText.style.webkitTextFillColor = '#fff';
+                    joinSliderText.innerText = "Processing...";
+                    window.processJoinSwipe();
+                } else {
+                    window.resetJoinSlider();
+                }
+            };
+
+            joinSliderThumb.addEventListener('mousedown', onStart);
+            joinSliderThumb.addEventListener('touchstart', onStart, {passive: false});
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, {passive: false});
+            window.addEventListener('mouseup', onEnd);
+            window.addEventListener('touchend', onEnd);
+        }
+
+        window.resetJoinSlider = () => {
+            joinSliderThumb.style.transform = `translate3d(0, 0, 0)`;
+            joinSliderFill.style.width = `0`;
+            joinSliderText.style.opacity = '1';
+            joinSliderText.style.webkitTextFillColor = 'transparent';
+            window.updateJoinUI(); 
+        };
+
+        setupJoinSlider();
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                currentUserDisplayName = user.displayName || user.email.split('@')[0];
+
+                get(ref(db, 'users/' + user.uid + '/gamerId')).then((snapshot) => {
+                    if(snapshot.exists()) {
+                        myGamerId = snapshot.val();
+                        document.getElementById('joinZxtorutId').value = `ZxTORUT ID: ${myGamerId}`;
+                    }
+                });
+
+                onValue(ref(db, 'users/' + user.uid + '/balance'), (snapshot) => {
+                    userBalance = snapshot.val() || 0;
+                    document.getElementById('balance-text').innerText = `₹${userBalance}`;
+                    document.getElementById('skeleton-balance').classList.remove('skeleton');
+                    if (document.getElementById('joinMatchOverlay').classList.contains('show')) window.updateJoinUI();
+                });
+
+                get(ref(db, 'users/' + user.uid + '/gameIds/bgmi')).then((snapshot) => {
+                    userBgmiId = snapshot.val() || "";
+                });
+
+                get(ref(db, 'users/' + user.uid + '/preferences/skipDisclaimer')).then((snapshot) => {
+                    skipDisclaimerPref = snapshot.val() === true;
+                });
+
+                onValue(ref(db, 'users/' + user.uid + '/joined_matches/bgmi'), (snapshot) => {
+                    userJoinedMatches = snapshot.val() || {};
+                    renderMatches();
+                });
+
+                onValue(ref(db, 'matches/bgmi'), (snapshot) => {
+                    liveMatches = snapshot.val() || {};
+                    renderMatches();
+                });
+
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

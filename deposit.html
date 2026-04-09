@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZxTORUT eSPORTS - Deposit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        /* Base Reset & Theme */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            background-color: #f0f2f5;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px; color: #111; font-family: 'Inter', sans-serif;
+            min-height: 100vh; padding-bottom: 60px; overflow-x: hidden;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: sticky; top: 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+            margin: 0 16px 24px 16px; padding: 10px 14px; background: #ffffff; border: 3px solid #111; border-radius: 40px; 
+            box-shadow: 0 12px 25px rgba(0,0,0,0.08), 0 6px 0px rgba(17, 17, 17, 0.15); 
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .back-btn {
+            width: 40px; height: 40px; border-radius: 50%; background: #f8f9fa; border: 2.5px solid #111;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; text-decoration: none; color: #111;
+            box-shadow: 2px 2px 0px rgba(17,17,17,0.15); transition: transform 0.2s;
+        }
+        .back-btn:active { transform: scale(0.9); }
+        .header-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
+
+        .container { padding: 0 20px; }
+
+        /* --- DEPOSIT CARD --- */
+        .card {
+            background: #ffffff; border: 3px solid #111; border-radius: 24px; padding: 24px;
+            margin-bottom: 24px; box-shadow: 6px 6px 0px rgba(17, 17, 17, 0.15); 
+        }
+        .card-title { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 900; margin-bottom: 8px; color: #111; text-transform: uppercase; }
+        .card-desc { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 24px; line-height: 1.5; }
+
+        .input-group { margin-bottom: 20px; width: 100%; position: relative; }
+        
+        .amount-input-wrapper { position: relative; display: flex; align-items: center; }
+        .amount-prefix { position: absolute; left: 20px; font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; color: #111; }
+        .amount-input {
+            width: 100%; padding: 20px 20px 20px 50px; background: #f8f9fa; border: 3px solid #e2e8f0; border-radius: 16px;
+            font-size: 24px; font-weight: 900; color: #111; outline: none; font-family: 'Montserrat', sans-serif; transition: border-color 0.3s;
+        }
+        .amount-input:focus { border-color: #34C759; background: #fff; }
+        
+        /* Dynamic Error Notice */
+        .min-notice { font-size: 12px; font-weight: 700; color: #ef4444; margin-top: 8px; display: none; align-items: center; gap: 4px; }
+        .min-notice.show { display: flex; }
+
+        .btn {
+            width: 100%; padding: 18px; background: #34C759; color: #111; border-radius: 16px; border: 3px solid #111;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 16px; text-transform: uppercase;
+            cursor: pointer; box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.2); transition: transform 0.1s; display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.2); }
+        .btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+        /* --- APPLE PAY STYLE POPUPS --- */
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 2000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .popup-overlay.show { opacity: 1; pointer-events: auto; }
+        .popup-sheet {
+            background: #ffffff; width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 35px 35px 0 0; border: 3px solid #111; border-bottom: none;
+            text-align: center; transform: translate3d(0, 100%, 0); transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .popup-overlay.show .popup-sheet { transform: translate3d(0, 0, 0); }
+        
+        /* Custom Scrollbar for Popup */
+        .popup-sheet::-webkit-scrollbar { width: 4px; }
+        .popup-sheet::-webkit-scrollbar-track { background: transparent; }
+        .popup-sheet::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .popup-msg { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: #111; margin-bottom: 8px; }
+        
+        .tick-circle { width: 60px; height: 60px; border-radius: 50%; border: 3.5px solid #34C759; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; }
+        .tick-circle.info { border-color: #6366f1; }
+        .tick-circle svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+        .tick-circle.success svg { stroke: #34C759; }
+        .tick-circle.info svg { stroke: #6366f1; }
+
+        /* High-Res QR Section FIXED (No CSS Padding) */
+        .qr-box {
+            width: 220px; height: 220px; background: #fff; border: 3px solid #111; border-radius: 20px; margin: 0 auto 20px;
+            display: flex; justify-content: center; align-items: center; box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.1); 
+            overflow: hidden; position: relative;
+        }
+        .qr-box svg, .qr-box canvas { 
+            width: 100% !important; 
+            height: 100% !important; 
+            display: block; 
+        }
+
+        .upi-display {
+            background: #f8f9fa; border: 2.5px solid #e2e8f0; border-radius: 16px; padding: 12px 16px; margin-bottom: 24px;
+            display: flex; justify-content: space-between; align-items: center; text-align: left;
+        }
+        .upi-text span { display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+        .upi-text div { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; color: #111; }
+        .copy-btn { background: #e2e8f0; border: none; border-radius: 10px; padding: 8px 12px; font-weight: 800; font-size: 11px; color: #111; cursor: pointer; text-transform: uppercase; transition: transform 0.1s; }
+        .copy-btn:active { transform: scale(0.9); }
+
+        .utr-input {
+            width: 100%; padding: 16px; background: #fff; border: 2.5px solid #111; border-radius: 16px;
+            font-size: 16px; font-weight: 700; color: #111; outline: none; font-family: 'Inter', sans-serif; text-align: center; letter-spacing: 2px; margin-bottom: 20px;
+        }
+        .utr-input:focus { border-color: #6366f1; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15); }
+        .input-label { font-size: 12px; color: #64748b; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; text-align: left; }
+
+        /* Sliders */
+        .slide-container {
+            position: relative; width: 100%; height: 64px; background: #f1f5f9; border: 3px solid #111; border-radius: 40px; 
+            overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 4px 8px rgba(0,0,0,0.05); margin-bottom: 16px;
+        }
+        .slide-text {
+            font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; z-index: 1; pointer-events: none;
+            background: linear-gradient(90deg, #64748b 0%, #0f172a 50%, #64748b 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: textShimmer 2.5s linear infinite; transition: opacity 0.3s ease;
+        }
+        @keyframes textShimmer { to { background-position: 200% center; } }
+        .slide-fill { position: absolute; top: 0; left: 0; bottom: 0; width: 0; background: #34C759; z-index: 0; border-radius: 40px; }
+        .slide-thumb {
+            position: absolute; left: 5px; top: 5px; bottom: 5px; width: 48px; height: 48px; background: #ffffff; border-radius: 50%; border: 3px solid #111; 
+            display: flex; justify-content: center; align-items: center; cursor: grab; z-index: 2; touch-action: none;
+            transform: translate3d(0, 0, 0); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1.1);
+        }
+        .slide-thumb.dragging { transition: none; }
+        .slide-thumb svg { width: 22px; height: 22px; stroke: #111; stroke-width: 2.5; fill: none; }
+
+        .btn-cancel { width: 100%; padding: 14px; background: transparent; color: #64748b; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; cursor: pointer; }
+
+    </style>
+</head>
+<body>
+
+    <div class="popup-overlay" id="statusOverlay" style="z-index: 2500;">
+        <div class="popup-sheet" style="padding-top: 50px; padding-bottom: 50px;">
+            <div class="tick-circle success"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></div>
+            <div class="popup-msg" id="statusMessage">Request Sent</div>
+            <div style="font-size: 14px; font-weight: 600; color: #111; margin-top: 12px; background: #e6f9ec; padding: 12px; border-radius: 12px; border: 2px solid #34C759;" id="statusSub">
+                Deposit credit under 10-20 min only.
+            </div>
+            <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-top: 16px;">Redirecting to Wallet...</div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="qrOverlay" onclick="closePopup('qrOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="tick-circle info"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M8 12h8M12 8v8"></path></svg></div>
+            <div class="popup-msg">Scan & Pay</div>
+            <div style="font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 24px;">Pay exactly <span id="payAmountText" style="color:#111; font-weight:900;">₹0</span> using any UPI app.</div>
+
+            <div class="qr-box" id="qrBox"></div>
+
+            <div class="upi-display">
+                <div class="upi-text">
+                    <span>Official UPI ID</span>
+                    <div id="upiIdText">9137174928@fam</div>
+                </div>
+                <button class="copy-btn" onclick="copyUpi()">Copy</button>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Enter 12-Digit UTR / Ref No.</label>
+                <input type="number" id="utrInput" class="utr-input" placeholder="e.g. 312345678901">
+            </div>
+
+            <div class="slide-container" id="submitSlideContainer">
+                <div class="slide-fill" id="submitSlideFill"></div>
+                <div class="slide-text" id="submitSlideText">Slide to Submit</div>
+                <div class="slide-thumb" id="submitSlideThumb">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </div>
+
+            <button class="btn-cancel" onclick="closePopupManual('qrOverlay')">Cancel Deposit</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-left">
+            <a href="wallet.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+            <div class="header-title">Add Funds</div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div class="card">
+            <div class="card-title">Enter Amount</div>
+            <div class="card-desc">Funds are 100% secure and instantly verified upon successful UTR submission.</div>
+
+            <div class="input-group">
+                <div class="amount-input-wrapper">
+                    <span class="amount-prefix">₹</span>
+                    <input type="number" id="depositAmount" class="amount-input" placeholder="100">
+                </div>
+                <div class="min-notice" id="minAmountError">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    Minimum deposit is ₹10
+                </div>
+            </div>
+
+            <button class="btn" onclick="generateQR()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>
+                Generate Payment
+            </button>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
+            authDomain: "zxtorut-e.firebaseapp.com",
+            databaseURL: "https://zxtorut-e-default-rtdb.firebaseio.com",
+            projectId: "zxtorut-e",
+            storageBucket: "zxtorut-e.firebasestorage.app",
+            messagingSenderId: "913962754970",
+            appId: "1:913962754970:web:ce2a90972d6cf459f0d023"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUserId = null;
+        let activeAmount = 0;
+        const ADMIN_UPI = "9137174928@fam";
+
+        // Remove error message when user starts typing a valid amount
+        document.getElementById('depositAmount').addEventListener('input', function() {
+            const val = parseInt(this.value);
+            if (val >= 10) {
+                document.getElementById('minAmountError').classList.remove('show');
+                document.getElementById('depositAmount').style.borderColor = '#34C759';
+            } else {
+                document.getElementById('depositAmount').style.borderColor = '#e2e8f0';
+            }
+        });
+
+        // --- UTILS ---
+        window.closePopup = (id, e) => { if(e.target.id === id) { document.getElementById(id).classList.remove('show'); window.resetSubmitSlider(); } };
+        window.closePopupManual = (id) => { document.getElementById(id).classList.remove('show'); window.resetSubmitSlider(); };
+
+        window.copyUpi = () => {
+            navigator.clipboard.writeText(ADMIN_UPI).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerText = "Copied!";
+                btn.style.background = "#34C759"; btn.style.color = "#fff";
+                setTimeout(() => { btn.innerText = "Copy"; btn.style.background = "#e2e8f0"; btn.style.color = "#111"; }, 2000);
+            });
+        };
+
+        // --- STEP 1: GENERATE HD SVG BUBBLE QR ---
+        window.generateQR = () => {
+            const amtStr = document.getElementById('depositAmount').value;
+            activeAmount = parseInt(amtStr);
+
+            // Dynamic Error Check
+            if (isNaN(activeAmount) || activeAmount < 10) {
+                document.getElementById('minAmountError').classList.add('show');
+                document.getElementById('depositAmount').style.borderColor = '#ef4444';
+                return;
+            }
+
+            document.getElementById('payAmountText').innerText = `₹${activeAmount}`;
+            
+            // Create exact UPI Link
+            const upiLink = `upi://pay?pa=${ADMIN_UPI}&pn=ZxTORUT%20eSPORTS&am=${activeAmount}&cu=INR`;
+            
+            // Clear previous QR Box contents
+            const qrBox = document.getElementById('qrBox');
+            qrBox.innerHTML = ''; 
+
+            // Generate crisp SVG QR Code perfectly sized for the box
+            const qrCode = new QRCodeStyling({
+                width: 220,  // Exact size of the CSS box
+                height: 220, // Exact size of the CSS box
+                type: "svg", 
+                data: upiLink,
+                margin: 15,  // Creates the internal white padding perfectly
+                qrOptions: { typeNumber: 0, mode: "Byte", errorCorrectionLevel: "Q" },
+                dotsOptions: { type: "dots", color: "#111" },
+                backgroundOptions: { color: "#fff" },
+                cornersSquareOptions: { type: "extra-rounded", color: "#111" },
+                cornersDotOptions: { type: "dot", color: "#6366f1" }
+            });
+            
+            qrCode.append(qrBox); // Inject SVG into the box
+
+            document.getElementById('utrInput').value = '';
+            document.getElementById('qrOverlay').classList.add('show');
+        };
+
+        // --- STEP 2: SUBMIT UTR TO FIREBASE ---
+        window.processSubmit = async () => {
+            const utr = document.getElementById('utrInput').value.trim();
+
+            if (utr.length < 12) {
+                alert("Please enter a valid 12-digit UTR/Reference Number.");
+                window.resetSubmitSlider();
+                return;
+            }
+
+            const txnId = 'txn_' + Date.now();
+            const now = Date.now();
+            const expiryTime = now + (6 * 60 * 60 * 1000); // 6 Hours from now
+
+            const txnData = {
+                title: "Wallet Top-up",
+                type: "deposit",
+                amount: activeAmount,
+                method: `UPI (UTR: ${utr})`,
+                txnRef: utr,
+                status: "pending",
+                timestamp: now,
+                expiresAt: expiryTime,
+                message: "If payment is rejected and you paid, you will get a refund in the next 12 hours."
+            };
+
+            // Admin Queue Data
+            const adminData = {
+                uid: currentUserId,
+                amount: activeAmount,
+                utr: utr,
+                timestamp: now,
+                status: 'pending'
+            };
+
+            try {
+                await set(ref(db, `users/${currentUserId}/transactions/${txnId}`), txnData);
+                await set(ref(db, `admin_queue/deposits/${txnId}`), adminData);
+
+                document.getElementById('qrOverlay').classList.remove('show');
+                document.getElementById('statusOverlay').classList.add('show');
+
+                setTimeout(() => { window.location.href = 'wallet.html'; }, 3000);
+
+            } catch (e) {
+                alert("Failed to submit request. Please try again.");
+                window.resetSubmitSlider();
+            }
+        };
+
+        // --- SLIDE TO SUBMIT PHYSICS ---
+        function setupSubmitSlider() {
+            const container = document.getElementById('submitSlideContainer');
+            const thumb = document.getElementById('submitSlideThumb');
+            const fill = document.getElementById('submitSlideFill');
+            const text = document.getElementById('submitSlideText');
+            
+            let isDragging = false, startX = 0, currentX = 0, maxSlide = 0;
+
+            const onStart = (e) => {
+                isDragging = true;
+                maxSlide = container.offsetWidth - thumb.offsetWidth - 10; 
+                startX = (e.touches ? e.touches[0].clientX : e.clientX) - currentX;
+                thumb.classList.add('dragging');
+                text.style.opacity = '0.1';
+            };
+
+            const onMove = (e) => {
+                if (!isDragging) return;
+                currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+                if (currentX < 0) currentX = 0;
+                if (currentX > maxSlide) currentX = maxSlide;
+                thumb.style.transform = `translate3d(${currentX}px, 0, 0)`;
+                fill.style.width = `${currentX + 22}px`; 
+            };
+
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                thumb.classList.remove('dragging');
+                
+                if (currentX >= maxSlide * 0.90) {
+                    currentX = maxSlide;
+                    thumb.style.transform = `translate3d(${maxSlide}px, 0, 0)`;
+                    fill.style.width = `100%`;
+                    text.style.opacity = '1'; text.style.webkitTextFillColor = '#fff';
+                    text.innerText = "Verifying...";
+                    
+                    window.processSubmit();
+                } else {
+                    window.resetSubmitSlider();
+                }
+            };
+
+            thumb.addEventListener('mousedown', onStart);
+            thumb.addEventListener('touchstart', onStart, {passive: false});
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, {passive: false});
+            window.addEventListener('mouseup', onEnd);
+            window.addEventListener('touchend', onEnd);
+        }
+
+        window.resetSubmitSlider = () => {
+            const thumb = document.getElementById('submitSlideThumb');
+            const fill = document.getElementById('submitSlideFill');
+            const text = document.getElementById('submitSlideText');
+            
+            thumb.style.transform = `translate3d(0, 0, 0)`;
+            fill.style.width = `0`;
+            text.style.opacity = '1';
+            text.style.webkitTextFillColor = 'transparent';
+            text.innerText = "Slide to Submit";
+        };
+
+        setupSubmitSlider();
+
+        // --- FIREBASE INIT & AUTO-REJECT LOGIC ---
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUserId = user.uid;
+
+            try {
+                const snapshot = await get(ref(db, `users/${user.uid}/transactions`));
+                if (snapshot.exists()) {
+                    const txns = snapshot.val();
+                    const now = Date.now();
+                    let updates = {};
+
+                    Object.keys(txns).forEach(txnId => {
+                        const txn = txns[txnId];
+                        // Auto reject if pending and expired
+                        if (txn.status === 'pending' && txn.expiresAt && now > txn.expiresAt) {
+                            updates[`users/${user.uid}/transactions/${txnId}/status`] = 'rejected';
+                            updates[`admin_queue/deposits/${txnId}/status`] = 'rejected';
+                        }
+                    });
+
+                    if (Object.keys(updates).length > 0) {
+                        await update(ref(db), updates);
+                    }
+                }
+            } catch (e) {
+                console.error("Auto-reject scan failed", e);
+            }
+        });
+    </script>
+</body>
+</html>

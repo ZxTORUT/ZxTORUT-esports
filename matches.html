@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZxTORUT eSPORTS - Match History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base Reset & Theme */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            background-color: #f0f2f5;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px; color: #111; font-family: 'Inter', sans-serif;
+            min-height: 100vh; padding-bottom: 120px; overflow-x: hidden;
+        }
+
+        /* --- SKELETON --- */
+        .skeleton {
+            background: #e2e8f0; background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 400% 100%; animation: skeleton-loading 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            border-radius: 8px; color: transparent !important; pointer-events: none;
+        }
+        .skeleton * { visibility: hidden; }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* --- HEADER --- */
+        header {
+            position: sticky; top: 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+            margin: 0 16px 24px 16px; padding: 10px 14px; background: #ffffff; border: 3px solid #111; border-radius: 40px; 
+            box-shadow: 0 12px 25px rgba(0,0,0,0.08), 0 6px 0px rgba(17, 17, 17, 0.15); 
+            transform: translate3d(0, -150%, 0); transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1);
+        }
+        header.show { transform: translate3d(0, 0, 0); }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        
+        .logo-box {
+            width: 46px !important; height: 46px !important; min-width: 46px !important; border-radius: 50% !important; 
+            background: #fff; border: 2.5px solid #111; box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15); 
+            display: block !important; position: relative !important; overflow: hidden !important; flex-shrink: 0;
+        }
+        .logo-box img {
+            width: 100% !important; height: 100% !important; object-fit: cover !important; position: absolute !important;
+            top: 0 !important; left: 0 !important; opacity: 0; transition: opacity 0.5s ease;
+        }
+        .user-greeting { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .user-name { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 900; color: #111; min-width: 90px; letter-spacing: -0.5px; }
+
+        .balance-box { display: inline-flex; align-items: center; gap: 6px; background: #f8f9fa; border: 2px solid #111; padding: 8px 14px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; color: #6366f1; min-width: 70px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* --- MATCH HISTORY LIST --- */
+        .container { padding: 0 20px; }
+        .section-title { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 900; margin-bottom: 18px; color: #111; text-transform: uppercase; }
+
+        .history-list { display: flex; flex-direction: column; gap: 16px; }
+        
+        .match-row {
+            background: #ffffff; border: 3px solid #111; border-radius: 20px; padding: 20px;
+            box-shadow: 6px 6px 0px rgba(17, 17, 17, 0.15); cursor: pointer; transition: transform 0.1s, box-shadow 0.2s;
+            display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .match-row:active { transform: scale(0.97); box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .match-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .match-info h4 { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; color: #111; text-transform: uppercase; margin-bottom: 4px; }
+        .match-info p { font-size: 12px; font-weight: 700; color: #64748b; }
+        
+        .status-badge { padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 2px solid; white-space: nowrap; }
+        .status-badge.active { background: #e0e7ff; color: #6366f1; border-color: #6366f1; }
+        .status-badge.live { background: #fee2e2; color: #ef4444; border-color: #ef4444; animation: pulse 2s infinite; }
+        .status-badge.finished { background: #f1f5f9; color: #64748b; border-color: #94a3b8; }
+        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+        .action-text { font-size: 13px; font-weight: 700; color: #6366f1; display: flex; align-items: center; justify-content: space-between; border-top: 2px dashed #e2e8f0; padding-top: 12px; margin-top: 4px; }
+        .action-text svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 3; fill: none; }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: #64748b; font-weight: 600; font-size: 15px; border: 3px dashed #cbd5e1; border-radius: 20px; margin-top: 20px;}
+
+        /* --- APPLE PAY POPUPS --- */
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 2000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .popup-overlay.show { opacity: 1; pointer-events: auto; }
+        .popup-sheet {
+            background: #ffffff; width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 35px 35px 0 0; border: 3px solid #111; border-bottom: none;
+            text-align: center; transform: translate3d(0, 100%, 0); transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        .popup-overlay.show .popup-sheet { transform: translate3d(0, 0, 0); }
+        .popup-msg { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: #111; margin-bottom: 8px; }
+        
+        .tick-circle { width: 60px; height: 60px; border-radius: 50%; border: 3.5px solid #6366f1; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; }
+        .tick-circle.success { border-color: #34C759; }
+        .tick-circle svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .input-group { margin-bottom: 16px; width: 100%; text-align: left; }
+        .input-label { font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        
+        .copy-input-wrapper { display: flex; align-items: center; gap: 8px; }
+        input {
+            width: 100%; padding: 16px; background: #f8f9fa; border: 2px solid #e2e8f0; border-radius: 16px;
+            font-size: 16px; font-weight: 800; color: #111; outline: none; font-family: 'Inter', sans-serif;
+        }
+        input[readonly] { background: #f1f5f9; border-color: #cbd5e1; }
+        
+        .copy-btn {
+            background: #6366f1; color: #fff; border: 2.5px solid #111; border-radius: 14px; padding: 0 16px; height: 55px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0; box-shadow: 2px 2px 0px rgba(17,17,17,0.2);
+        }
+        .copy-btn:active { transform: scale(0.92); box-shadow: 1px 1px 0px rgba(17,17,17,0.2); }
+        .copy-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+        .btn { width: 100%; padding: 16px; background: #111; color: #ffffff; border-radius: 16px; border: 2.5px solid #111; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 12px; }
+
+        .pending-notice { background: #fef2f2; border: 2px solid #fca5a5; padding: 16px; border-radius: 16px; color: #ef4444; font-weight: 600; font-size: 14px; margin: 20px 0; line-height: 1.5; }
+
+        /* --- BOTTOM NAVIGATION --- */
+        .bottom-nav-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translate3d(0, 150%, 0); width: 90%; max-width: 400px; background: #ffffff; border: 3px solid #111; border-radius: 28px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 8px 0px rgba(17, 17, 17, 0.15); z-index: 1000; transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1); }
+        .bottom-nav-container.show { transform: translateX(-50%) translate3d(0, 0, 0); }
+        .nav-bubble { position: absolute; top: 8px; bottom: 8px; left: 0; background: #111; border-radius: 20px; z-index: 0; will-change: transform, width; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+        .nav-item { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: #64748b; font-weight: 700; font-size: 11px; padding: 10px 0; border-radius: 20px; }
+        .nav-item svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+        .nav-item:active svg { transform: scale(0.85); }
+        .nav-item.active { color: #ffffff; }
+        .nav-item.active svg { stroke: #ffffff; fill: rgba(255, 255, 255, 0.15); }
+    </style>
+</head>
+<body>
+
+    <div class="popup-overlay" id="statusOverlay" style="z-index: 2500;">
+        <div class="popup-sheet">
+            <div class="tick-circle success" id="statusIcon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></div>
+            <div class="popup-msg" id="statusMessage">Success</div>
+            <div style="font-size: 14px; font-weight: 600; color: #64748b;" id="statusSub">Action completed.</div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="roomVaultOverlay" onclick="closePopup('roomVaultOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="tick-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+            <div class="popup-msg" id="vaultTitle">Room Details</div>
+            <div style="margin-bottom: 20px; font-size: 13px; font-weight: 600; color: #64748b;" id="vaultSub">Connecting to server...</div>
+            
+            <div id="vaultContent">
+                </div>
+
+            <button class="btn" style="background: transparent; color: #111; border-color: #e2e8f0; box-shadow: none;" onclick="document.getElementById('roomVaultOverlay').classList.remove('show')">Close Vault</button>
+        </div>
+    </div>
+
+    <header id="islandHeader">
+        <div class="header-left">
+            <div class="logo-box skeleton" id="avatarInitial">
+                <img src="logo.jpg" alt="Logo" id="logo-img">
+            </div>
+            <div>
+                <div class="user-greeting">Battle Log</div>
+                <div class="user-name skeleton" id="header-name">Loading...</div>
+            </div>
+        </div>
+        <div class="balance-box skeleton" id="skeleton-balance">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+            </svg>
+            <span id="balance-text" style="margin-left: 2px;">₹0</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 class="section-title">Your Matches</h2>
+        
+        <div class="history-list" id="matchesContainer">
+            <div class="match-row skeleton" style="height: 140px;"></div>
+            <div class="match-row skeleton" style="height: 140px;"></div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav-container" id="bottomNav">
+        <div class="nav-bubble" id="navBubble"></div>
+        <a href="home.html" class="nav-item" id="nav-home">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </a>
+        <a href="matches.html" class="nav-item active" id="nav-matches">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span>Matches</span>
+        </a>
+        <a href="wallet.html" class="nav-item" id="nav-wallet">
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            <span>Wallet</span>
+        </a>
+        <a href="profile.html" class="nav-item" id="nav-profile">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
+            authDomain: "zxtorut-e.firebaseapp.com",
+            databaseURL: "https://zxtorut-e-default-rtdb.firebaseio.com",
+            projectId: "zxtorut-e",
+            storageBucket: "zxtorut-e.firebasestorage.app",
+            messagingSenderId: "913962754970",
+            appId: "1:913962754970:web:ce2a90972d6cf459f0d023"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let myJoinedMatches = []; // Holds structured match data
+
+        // --- NAVIGATION BUBBLE ---
+        function updateBubblePosition(activeElement) {
+            if(!activeElement) return;
+            const bubble = document.getElementById('navBubble');
+            const container = document.getElementById('bottomNav');
+            const offsetX = activeElement.getBoundingClientRect().left - container.getBoundingClientRect().left;
+            bubble.style.transform = `translate3d(${offsetX}px, 0, 0)`;
+            bubble.style.width = `${activeElement.getBoundingClientRect().width}px`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { 
+                document.getElementById('islandHeader').classList.add('show');
+                document.getElementById('bottomNav').classList.add('show'); 
+                updateBubblePosition(document.querySelector('.nav-item.active'));
+            }, 100);
+
+            const img = document.getElementById('logo-img');
+            if (img) {
+                img.onload = () => { img.style.opacity = '1'; img.parentElement.classList.remove('skeleton'); };
+                setTimeout(() => { img.style.opacity = '1'; img.parentElement.classList.remove('skeleton'); }, 1000);
+            }
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    const targetUrl = item.getAttribute('href');
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    item.classList.add('active');
+                    updateBubblePosition(item);
+                    if(targetUrl && targetUrl !== '#' && targetUrl !== 'matches.html') {
+                        setTimeout(() => { window.location.href = targetUrl; }, 250); 
+                    }
+                });
+            });
+        });
+
+        // --- POPUP CONTROLS ---
+        window.closePopup = (id, e) => { if(e.target.id === id) document.getElementById(id).classList.remove('show'); };
+        
+        window.showStatus = (msg, sub) => {
+            document.getElementById('statusMessage').innerText = msg;
+            document.getElementById('statusSub').innerText = sub;
+            const overlay = document.getElementById('statusOverlay');
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 2500);
+        };
+
+        window.copyToClipboard = (text, type) => {
+            navigator.clipboard.writeText(text).then(() => {
+                window.showStatus("Copied to Clipboard", `${type} has been copied.`);
+            });
+        };
+
+        // --- OPEN ROOM VAULT ---
+        window.openRoomVault = (matchId, gameCode) => {
+            // Find the match data from our array
+            const matchData = myJoinedMatches.find(m => m.id === matchId && m.gameCode === gameCode)?.data;
+            if(!matchData) return;
+
+            document.getElementById('vaultTitle').innerText = "Room Details";
+            document.getElementById('vaultSub').innerText = matchData.title;
+
+            const vaultContent = document.getElementById('vaultContent');
+
+            if (matchData.status === 'finished') {
+                // Finished match - Room closed
+                vaultContent.innerHTML = `
+                    <div class="pending-notice" style="color: #64748b; border-color: #cbd5e1; background: #f1f5f9;">
+                        This match has already concluded. The room is permanently closed.
+                    </div>
+                `;
+            } else if (matchData.roomId && matchData.roomPassword) {
+                // Room details exist
+                vaultContent.innerHTML = `
+                    <div class="input-group">
+                        <label class="input-label">Room ID</label>
+                        <div class="copy-input-wrapper">
+                            <input type="text" readonly value="${matchData.roomId}">
+                            <button class="copy-btn" onclick="copyToClipboard('${matchData.roomId}', 'Room ID')">
+                                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Room Password</label>
+                        <div class="copy-input-wrapper">
+                            <input type="text" readonly value="${matchData.roomPassword}">
+                            <button class="copy-btn" onclick="copyToClipboard('${matchData.roomPassword}', 'Password')">
+                                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Match not finished, but details not uploaded yet
+                vaultContent.innerHTML = `
+                    <div class="pending-notice">
+                        Room ID and Password have not been uploaded by the admin yet.<br><br>Please check back 10-15 minutes before the match start time.
+                    </div>
+                `;
+            }
+
+            document.getElementById('roomVaultOverlay').classList.add('show');
+        };
+
+        // --- RENDER HISTORY LOGIC ---
+        function renderHistory() {
+            const container = document.getElementById('matchesContainer');
+            container.innerHTML = '';
+
+            if (myJoinedMatches.length === 0) {
+                container.innerHTML = `<div class="empty-state">You haven't joined any matches yet. Head to the arena and secure your slot!</div>`;
+                return;
+            }
+
+            // Sort: Upcoming/Live first, then by start time
+            myJoinedMatches.sort((a, b) => b.data.startTimestamp - a.data.startTimestamp);
+
+            myJoinedMatches.forEach(m => {
+                const isFinished = m.data.status === 'finished';
+                const isLive = !isFinished && (m.data.startTimestamp <= Date.now());
+                
+                let statusClass = 'active';
+                let statusText = 'Upcoming';
+                let actionText = 'Get Room ID & Password';
+                
+                if (isFinished) {
+                    statusClass = 'finished';
+                    statusText = 'Finished';
+                    actionText = 'Match Concluded';
+                } else if (isLive) {
+                    statusClass = 'live';
+                    statusText = 'Live Now';
+                }
+
+                const row = document.createElement('div');
+                row.className = 'match-row';
+                row.onclick = () => openRoomVault(m.id, m.gameCode);
+                
+                row.innerHTML = `
+                    <div class="match-header">
+                        <div class="match-info">
+                            <h4>${m.data.title}</h4>
+                            <p>${m.gameName} • ${m.data.timeText}</p>
+                        </div>
+                        <div class="status-badge ${statusClass}">${statusText}</div>
+                    </div>
+                    <div class="action-text" style="color: ${isFinished ? '#94a3b8' : '#6366f1'}">
+                        <span>${actionText}</span>
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // --- FETCH DATA ---
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // UI Setup
+            const nameEl = document.getElementById('header-name');
+            nameEl.innerText = user.displayName || user.email.split('@')[0];
+            nameEl.classList.remove('skeleton');
+
+            onValue(ref(db, 'users/' + user.uid + '/balance'), (snapshot) => {
+                document.getElementById('balance-text').innerText = `₹${snapshot.val() || 0}`;
+                document.getElementById('skeleton-balance').classList.remove('skeleton');
+            });
+
+            // 1. Get User's Joined Matches IDs
+            onValue(ref(db, 'users/' + user.uid + '/joined_matches'), async (snapshot) => {
+                const joinedData = snapshot.val() || {};
+                const bgmiJoinedIds = Object.keys(joinedData.bgmi || {});
+                const ffmaxJoinedIds = Object.keys(joinedData.ffmax || {});
+
+                // 2. Fetch the actual Match Data from public folders
+                const bgmiMatchesSnap = await get(ref(db, 'matches/bgmi'));
+                const ffmaxMatchesSnap = await get(ref(db, 'matches/ffmax'));
+
+                const bgmiMatches = bgmiMatchesSnap.val() || {};
+                const ffmaxMatches = ffmaxMatchesSnap.val() || {};
+
+                myJoinedMatches = [];
+
+                // Filter and push BGMI
+                bgmiJoinedIds.forEach(id => {
+                    if (bgmiMatches[id]) {
+                        myJoinedMatches.push({ id: id, gameCode: 'bgmi', gameName: 'BGMI', data: bgmiMatches[id] });
+                    }
+                });
+
+                // Filter and push FFMAX
+                ffmaxJoinedIds.forEach(id => {
+                    if (ffmaxMatches[id]) {
+                        myJoinedMatches.push({ id: id, gameCode: 'ffmax', gameName: 'FREE FIRE MAX', data: ffmaxMatches[id] });
+                    }
+                });
+
+                renderHistory();
+            });
+        });
+    </script>
+</body>
+</html>

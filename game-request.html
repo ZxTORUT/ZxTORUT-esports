@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZxTORUT eSPORTS - Match Requests</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base Reset & Theme */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f0f2f5; background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px); background-size: 30px 30px; color: #111; font-family: 'Inter', sans-serif; min-height: 100vh; padding-bottom: 60px; overflow-x: hidden; }
+
+        svg { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+        .skeleton { background: #e2e8f0; background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%); background-size: 400% 100%; animation: skeleton-loading 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite; border-radius: 8px; color: transparent !important; pointer-events: none; }
+        .skeleton * { visibility: hidden; }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* --- HEADER --- */
+        header { position: sticky; top: 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center; margin: 0 16px 24px 16px; padding: 10px 14px; background: #ffffff; border: 3px solid #111; border-radius: 40px; box-shadow: 0 12px 25px rgba(0,0,0,0.08), 0 6px 0px rgba(17, 17, 17, 0.15); transform: translate3d(0, -150%, 0); transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1); }
+        header.show { transform: translate3d(0, 0, 0); }
+        
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .back-btn { width: 40px; height: 40px; border-radius: 50%; background: #f8f9fa; border: 2.5px solid #111; display: flex; justify-content: center; align-items: center; cursor: pointer; text-decoration: none; color: #111; box-shadow: 2px 2px 0px rgba(17,17,17,0.15); transition: transform 0.2s; }
+        .back-btn:active { transform: scale(0.9); }
+        .header-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
+
+        .balance-box { display: inline-flex; align-items: center; gap: 6px; background: #f8f9fa; border: 2px solid #111; padding: 8px 14px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; color: #6366f1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .balance-box svg { width: 18px; height: 18px; stroke-width: 2.5; }
+
+        .container { padding: 0 20px; }
+        
+        .section-title { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 900; margin-bottom: 16px; color: #111; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; }
+        .badge-count { background: #ef4444; color: #fff; font-size: 12px; font-weight: 900; padding: 2px 10px; border-radius: 12px; border: 2px solid #111; }
+
+        /* --- LIST STYLES --- */
+        .req-list { display: flex; flex-direction: column; gap: 16px; }
+        
+        .req-card {
+            background: #ffffff; border: 3px solid #111; border-radius: 20px; padding: 18px;
+            box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.15); cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+            display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden;
+        }
+        .req-card:active { transform: scale(0.98); box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15); }
+        
+        .req-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .req-game-badge { font-size: 10px; font-weight: 900; text-transform: uppercase; background: #111; color: #fff; padding: 4px 8px; border-radius: 8px; letter-spacing: 0.5px; }
+        .req-time { font-size: 11px; font-weight: 700; color: #64748b; }
+        
+        .req-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; color: #111; line-height: 1.3; }
+        .req-sender { font-size: 13px; font-weight: 600; color: #64748b; display: flex; align-items: center; gap: 6px; }
+        .req-sender span { color: #6366f1; font-weight: 800; }
+
+        .req-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1.5px dashed #e2e8f0; padding-top: 12px; margin-top: 4px; }
+        .req-fee { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 900; color: #ef4444; }
+        .req-action { font-size: 12px; font-weight: 800; color: #111; text-transform: uppercase; display: flex; align-items: center; gap: 4px; }
+        .req-action svg { width: 16px; height: 16px; stroke-width: 3; stroke: #34C759; }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: #64748b; font-weight: 600; font-size: 15px; border: 3px dashed #cbd5e1; border-radius: 20px; line-height: 1.5; }
+
+        /* --- POPUPS --- */
+        .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 2000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .popup-overlay.show { opacity: 1; pointer-events: auto; }
+        .popup-sheet { background: #ffffff; width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 35px 35px 0 0; border: 3px solid #111; border-bottom: none; text-align: center; transform: translate3d(0, 100%, 0); transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1); display: flex; flex-direction: column; align-items: center; max-height: 90vh; overflow-y: auto; }
+        .popup-overlay.show .popup-sheet { transform: translate3d(0, 0, 0); }
+        
+        .popup-msg { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: #111; margin-bottom: 8px; width: 100%; text-transform: uppercase; }
+
+        .tick-circle { width: 60px; height: 60px; border-radius: 50%; border: 3.5px solid #34C759; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; }
+        .tick-circle.info { border-color: #6366f1; }
+        .tick-circle.error { border-color: #ef4444; }
+        .tick-circle svg { width: 30px; height: 30px; stroke-width: 3.5; }
+        .tick-circle.success svg { stroke: #34C759; }
+        .tick-circle.error svg { stroke: #ef4444; }
+        .tick-circle.info svg { stroke: #6366f1; }
+
+        .detail-box { background: #f8f9fa; border: 2.5px solid #111; border-radius: 16px; padding: 16px; margin: 20px 0; display: flex; flex-direction: column; gap: 12px; text-align: left; width: 100%; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; }
+        .detail-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        .detail-val { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 900; color: #111; }
+        .detail-val.highlight { color: #6366f1; font-size: 16px; }
+        .detail-val.fee { color: #ef4444; font-size: 18px; }
+        .detail-val.free { color: #34C759; font-size: 18px; }
+
+        /* Sliders */
+        .slide-container { position: relative; width: 100%; height: 68px; background: #f1f5f9; border: 3px solid #111; border-radius: 40px; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 4px 8px rgba(0,0,0,0.05); margin-top: 10px; flex-shrink: 0; width: 100%; }
+        .slide-text { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; z-index: 1; pointer-events: none; background: linear-gradient(90deg, #64748b 0%, #0f172a 50%, #64748b 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: textShimmer 2.5s linear infinite; transition: opacity 0.3s ease; }
+        @keyframes textShimmer { to { background-position: 200% center; } }
+        .slide-fill { position: absolute; top: 0; left: 0; bottom: 0; width: 0; background: #34C759; z-index: 0; border-radius: 40px; transition: background 0.3s; }
+        .slide-thumb { position: absolute; left: 6px; top: 6px; bottom: 6px; width: 50px; height: 50px; background: #ffffff; border-radius: 50%; border: 3px solid #111; display: flex; justify-content: center; align-items: center; cursor: grab; z-index: 2; touch-action: none; transform: translate3d(0, 0, 0); will-change: transform; transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1.1); }
+        .slide-thumb.dragging { transition: none; }
+        .slide-thumb svg { width: 22px; height: 22px; stroke-width: 2.5; stroke: #111; }
+
+        .btn-cancel { width: 100%; padding: 14px; background: transparent; color: #64748b; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; cursor: pointer; margin-top: 12px; }
+        .btn-reject { width: 100%; padding: 14px; background: #fef2f2; color: #ef4444; border: 2.5px solid #ef4444; border-radius: 16px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 13px; text-transform: uppercase; cursor: pointer; margin-top: 16px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="popup-overlay" id="statusOverlay" style="z-index: 2500;">
+        <div class="popup-sheet" style="padding-top: 50px; padding-bottom: 50px;">
+            <div class="tick-circle success" id="statusIcon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></div>
+            <div class="popup-msg" id="statusMessage">Success</div>
+            <div class="detail-label" id="statusSub" style="font-size: 14px;">Action completed.</div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="actionOverlay" onclick="closePopup('actionOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="tick-circle info"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg></div>
+            <div class="popup-msg">Squad Invite</div>
+            <div class="detail-label" style="margin-bottom: 8px;">Review your invitation below</div>
+
+            <div class="detail-box">
+                <div class="detail-row"><span class="detail-label">Invited By</span><span class="detail-val highlight" id="detSender">--</span></div>
+                <div class="detail-row"><span class="detail-label">Match Title</span><span class="detail-val" id="detMatchTitle" style="text-align:right; max-width: 60%;">--</span></div>
+                <div class="detail-row"><span class="detail-label">Game</span><span class="detail-val" id="detGame">--</span></div>
+                <div style="width: 100%; height: 2px; background: #e2e8f0; margin: 4px 0; border-radius: 2px;"></div>
+                
+                <div class="detail-row">
+                    <span class="detail-label" id="detFeeLabel">Your Entry Fee</span>
+                    <span class="detail-val fee" id="detFee">₹0</span>
+                </div>
+            </div>
+
+            <div id="alreadyJoinedText" style="display:none; font-size: 12px; font-weight: 700; color: #34C759; margin-bottom: 16px; background: #e6f9ec; padding: 10px; border-radius: 10px; border: 1.5px solid #34C759; width: 100%;">
+                You are already registered for this match! You can accept this invite for free.
+            </div>
+
+            <div class="slide-container" id="acceptSlideContainer">
+                <div class="slide-fill" id="acceptSlideFill"></div>
+                <div class="slide-text" id="acceptSlideText">Slide to Accept & Pay</div>
+                <div class="slide-thumb" id="acceptSlideThumb">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </div>
+
+            <button class="btn-reject" onclick="rejectRequest()">Decline Invite</button>
+            <button class="btn-cancel" onclick="closePopupManual('actionOverlay')">Cancel</button>
+        </div>
+    </div>
+
+    <header id="islandHeader">
+        <div class="header-left">
+            <a href="home.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            </a>
+            <div class="header-title">Squad Invites</div>
+        </div>
+        <div class="balance-box skeleton" id="skeleton-balance">
+            <svg viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+            <span id="balance-text" style="margin-left: 2px;">₹0</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 class="section-title">Pending Requests <span class="badge-count" id="pendingCount">0</span></h2>
+        
+        <div class="req-list" id="requestList">
+            <div class="empty-state">Loading your invites...</div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, get, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
+            authDomain: "zxtorut-e.firebaseapp.com",
+            databaseURL: "https://zxtorut-e-default-rtdb.firebaseio.com",
+            projectId: "zxtorut-e",
+            storageBucket: "zxtorut-e.firebasestorage.app",
+            messagingSenderId: "913962754970",
+            appId: "1:913962754970:web:ce2a90972d6cf459f0d023"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUserId = null;
+        let userBalance = 0;
+        let pendingRequests = [];
+        
+        // Caches for quick lookups
+        let matchesCache = { bgmi: {}, ffmax: {} };
+        let userJoinedMatchesCache = { bgmi: {}, ffmax: {} };
+        
+        let activeReq = null;
+        let activeMatchData = null;
+        let requiresPayment = true;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { document.getElementById('islandHeader').classList.add('show'); }, 100);
+        });
+
+        // --- UI UTILS ---
+        window.closePopup = (id, e) => { 
+            if(e.target.id === id) { document.getElementById(id).classList.remove('show'); window.resetSlider(); }
+        };
+        window.closePopupManual = (id) => { 
+            document.getElementById(id).classList.remove('show'); window.resetSlider(); 
+        };
+        
+        function showStatus(msg, sub, type = 'success') {
+            document.getElementById('statusMessage').innerText = msg;
+            document.getElementById('statusSub').innerText = sub;
+            const icon = document.getElementById('statusIcon');
+            icon.className = type === 'success' ? 'tick-circle success' : 'tick-circle error';
+            icon.innerHTML = type === 'success' ? '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>' : '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"></path></svg>';
+            const overlay = document.getElementById('statusOverlay');
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 3000);
+        }
+
+        // --- FETCH MATCH TITLES TO ENRICH LIST ---
+        async function enrichAndRenderList() {
+            const container = document.getElementById('requestList');
+            container.innerHTML = '';
+
+            document.getElementById('pendingCount').innerText = pendingRequests.length;
+
+            if (pendingRequests.length === 0) {
+                container.innerHTML = `<div class="empty-state">No pending invites.<br><br>Tell your squad to send you a request!</div>`;
+                return;
+            }
+
+            // Ensure we have match titles
+            for (let req of pendingRequests) {
+                if (!matchesCache[req.game][req.matchId]) {
+                    const snap = await get(ref(db, `matches/${req.game}/${req.matchId}`));
+                    if (snap.exists()) matchesCache[req.game][req.matchId] = snap.val();
+                }
+            }
+
+            pendingRequests.forEach(req => {
+                const match = matchesCache[req.game][req.matchId] || { title: "Unknown Match" };
+                const d = new Date(req.timestamp);
+                const timeStr = d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+                const gameName = req.game === 'bgmi' ? 'BGMI' : 'FF MAX';
+
+                const card = document.createElement('div');
+                card.className = 'req-card';
+                card.onclick = () => openActionOverlay(req, match);
+
+                card.innerHTML = `
+                    <div class="req-header">
+                        <div class="req-game-badge">${gameName}</div>
+                        <div class="req-time">${timeStr}</div>
+                    </div>
+                    <div class="req-title">${match.title}</div>
+                    <div class="req-sender">Invited by: <span>${req.fromName}</span></div>
+                    <div class="req-footer">
+                        <div class="req-fee">₹${req.fee}</div>
+                        <div class="req-action">Tap to View <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- OPEN ACTION OVERLAY ---
+        window.openActionOverlay = (req, match) => {
+            activeReq = req;
+            activeMatchData = match;
+
+            document.getElementById('detSender').innerText = req.fromName;
+            document.getElementById('detMatchTitle').innerText = match.title || "Unknown Match";
+            document.getElementById('detGame').innerText = req.game === 'bgmi' ? 'BATTLEGROUNDS MOBILE INDIA' : 'FREE FIRE MAX';
+
+            // Smart Logic: Check if user already joined this match
+            const userJoinedData = userJoinedMatchesCache[req.game] || {};
+            const alreadyJoined = userJoinedData[req.matchId] !== undefined;
+
+            const feeEl = document.getElementById('detFee');
+            const feeLabel = document.getElementById('detFeeLabel');
+            const joinedText = document.getElementById('alreadyJoinedText');
+            const sliderText = document.getElementById('acceptSlideText');
+
+            if (alreadyJoined) {
+                requiresPayment = false;
+                feeLabel.innerText = "Entry Fee (Waived)";
+                feeEl.innerText = "₹0";
+                feeEl.className = 'detail-val free';
+                joinedText.style.display = 'block';
+                sliderText.innerText = "Slide to Accept";
+            } else {
+                requiresPayment = true;
+                feeLabel.innerText = "Your Entry Fee";
+                feeEl.innerText = `₹${req.fee}`;
+                feeEl.className = 'detail-val fee';
+                joinedText.style.display = 'none';
+                sliderText.innerText = `Slide to Pay ₹${req.fee}`;
+            }
+
+            document.getElementById('actionOverlay').classList.add('show');
+        };
+
+        // --- REJECT REQUEST ---
+        window.rejectRequest = async () => {
+            if(!activeReq) return;
+            try {
+                await update(ref(db, `game_requests/${currentUserId}/${activeReq.id}`), { status: 'rejected' });
+                closePopupManual('actionOverlay');
+                showStatus("Declined", "Invitation removed.");
+            } catch(e) {
+                alert("Failed to decline.");
+            }
+        };
+
+        // --- PROCESS ACCEPT SWIPE ---
+        window.processAccept = async () => {
+            if(!activeReq || !activeMatchData) return;
+
+            if (requiresPayment && userBalance < activeReq.fee) {
+                alert("Insufficient funds in wallet to accept this invite.");
+                window.resetSlider();
+                return;
+            }
+
+            try {
+                let updates = {};
+                
+                // 1. Deduct Balance (If needed)
+                if (requiresPayment) {
+                    const newBalance = userBalance - activeReq.fee;
+                    updates[`users/${currentUserId}/balance`] = newBalance;
+                    
+                    // --- FIXED: ADD DIGITAL RECEIPT TO WALLET HISTORY ---
+                    const txnId = 'txn_' + Date.now();
+                    updates[`users/${currentUserId}/transactions/${txnId}`] = {
+                        title: activeMatchData.title || "Squad Invite",
+                        type: "join",
+                        amount: -activeReq.fee,
+                        method: "Wallet Auto",
+                        status: "success",
+                        timestamp: Date.now(),
+                        closingBalance: newBalance,
+                        txnRef: `INVITE-${activeReq.matchId.slice(-6)}`
+                    };
+                    
+                    // 2. Register Join
+                    updates[`users/${currentUserId}/joined_matches/${activeReq.game}/${activeReq.matchId}`] = { 
+                        timestamp: Date.now(), 
+                        paidForTeam: false 
+                    };
+
+                    // 3. Update Match Spots
+                    updates[`matches/${activeReq.game}/${activeReq.matchId}/spotsFilled`] = (activeMatchData.spotsFilled || 0) + 1;
+                }
+
+                // 4. Mark Request as Accepted
+                updates[`game_requests/${currentUserId}/${activeReq.id}/status`] = 'accepted';
+
+                // Execute Transaction
+                await update(ref(db), updates);
+
+                closePopupManual('actionOverlay');
+                
+                if (requiresPayment) showStatus("Joined!", `Paid ₹${activeReq.fee} and joined the squad.`);
+                else showStatus("Accepted!", "You have joined the squad.");
+
+            } catch(e) {
+                alert("Failed to process request.");
+                window.resetSlider();
+            }
+        };
+
+        // --- SLIDER PHYSICS ---
+        function setupSlider() {
+            const container = document.getElementById('acceptSlideContainer');
+            const thumb = document.getElementById('acceptSlideThumb');
+            const fill = document.getElementById('acceptSlideFill');
+            const text = document.getElementById('acceptSlideText');
+            
+            let isDragging = false, startX = 0, currentX = 0, maxSlide = 0;
+
+            const onStart = (e) => {
+                isDragging = true;
+                maxSlide = container.offsetWidth - thumb.offsetWidth - 12; 
+                startX = (e.touches ? e.touches[0].clientX : e.clientX) - currentX;
+                thumb.classList.add('dragging');
+                text.style.opacity = '0.1';
+            };
+
+            const onMove = (e) => {
+                if (!isDragging) return;
+                currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+                if (currentX < 0) currentX = 0;
+                if (currentX > maxSlide) currentX = maxSlide;
+                thumb.style.transform = `translate3d(${currentX}px, 0, 0)`;
+                fill.style.width = `${currentX + 26}px`; 
+            };
+
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+                thumb.classList.remove('dragging');
+                
+                if (currentX >= maxSlide * 0.90) {
+                    currentX = maxSlide;
+                    thumb.style.transform = `translate3d(${maxSlide}px, 0, 0)`;
+                    fill.style.width = `100%`;
+                    text.style.opacity = '1'; text.style.webkitTextFillColor = '#fff';
+                    text.innerText = "Processing...";
+                    window.processAccept();
+                } else {
+                    window.resetSlider();
+                }
+            };
+
+            thumb.addEventListener('mousedown', onStart);
+            thumb.addEventListener('touchstart', onStart, {passive: false});
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, {passive: false});
+            window.addEventListener('mouseup', onEnd);
+            window.addEventListener('touchend', onEnd);
+        }
+
+        window.resetSlider = () => {
+            const thumb = document.getElementById('acceptSlideThumb');
+            const fill = document.getElementById('acceptSlideFill');
+            const text = document.getElementById('acceptSlideText');
+            
+            thumb.style.transform = `translate3d(0, 0, 0)`;
+            fill.style.width = `0`;
+            text.style.opacity = '1';
+            text.style.webkitTextFillColor = 'transparent';
+            text.innerText = requiresPayment ? `Slide to Pay ₹${activeReq ? activeReq.fee : 0}` : "Slide to Accept";
+        };
+
+        setupSlider();
+
+        // --- FIREBASE SYNC ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+
+                // Load Balance
+                onValue(ref(db, 'users/' + user.uid + '/balance'), (snapshot) => {
+                    userBalance = snapshot.val() || 0;
+                    document.getElementById('balance-text').innerText = `₹${userBalance}`;
+                    document.getElementById('skeleton-balance').classList.remove('skeleton');
+                });
+
+                // Pre-load user's joined matches for smart checking
+                onValue(ref(db, 'users/' + user.uid + '/joined_matches'), (snapshot) => {
+                    if (snapshot.exists()) userJoinedMatchesCache = snapshot.val();
+                });
+
+                // Listen to Game Requests
+                onValue(ref(db, 'game_requests/' + user.uid), (snapshot) => {
+                    pendingRequests = [];
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        Object.keys(data).forEach(id => {
+                            if (data[id].status === 'pending') {
+                                pendingRequests.push({ id, ...data[id] });
+                            }
+                        });
+                    }
+                    enrichAndRenderList();
+                });
+
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZxTORUT eSPORTS - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base Reset & Theme */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            background-color: #f0f2f5;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #111;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 120px; /* Space for nav */
+            overflow-x: hidden;
+        }
+
+        /* --- STRICT SVG LOCK --- */
+        svg { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+        /* --- SKELETON --- */
+        .skeleton {
+            background: #e2e8f0;
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 400% 100%;
+            animation: skeleton-loading 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            border-radius: 8px;
+            color: transparent !important;
+            pointer-events: none;
+        }
+        .skeleton * { visibility: hidden; }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* --- FLOATING ISLAND HEADER --- */
+        header {
+            position: sticky;
+            top: 16px; 
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 16px 24px 16px; 
+            padding: 10px 14px 10px 10px; 
+            background: #ffffff;
+            border: 3px solid #111;
+            border-radius: 40px; 
+            box-shadow: 0 12px 25px rgba(0,0,0,0.08), 0 6px 0px rgba(17, 17, 17, 0.15); 
+            transform: translate3d(0, -150%, 0);
+            transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1);
+        }
+        header.show { transform: translate3d(0, 0, 0); }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+
+        .logo-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%; 
+            background: #fff;
+            border: 2.5px solid #111;
+            box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15);
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex; justify-content: center; align-items: center; position: relative;
+        }
+        .logo-box img {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; top: 0; left: 0;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+
+        .user-greeting {
+            font-size: 11px; color: #64748b; font-weight: 700;
+            margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .user-name {
+            font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 900;
+            color: #111; min-width: 90px; letter-spacing: -0.5px;
+        }
+
+        .balance-box {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #f8f9fa; border: 2px solid #111; padding: 8px 14px;
+            border-radius: 20px; font-family: 'Montserrat', sans-serif;
+            font-weight: 800; font-size: 14px; color: #6366f1;
+            min-width: 70px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); 
+        }
+        .balance-box svg { width: 18px; height: 18px; stroke-width: 2.5; }
+
+        /* --- NOTIFICATION BAR --- */
+        .notice-wrapper { padding: 0 20px; }
+        .notice-wrapper a { text-decoration: none; outline: none; display: block; }
+        .notice-board {
+            background: #111; color: #fff; padding: 14px 18px;
+            border-radius: 16px; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.15); min-height: 52px; cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .notice-board:active { transform: scale(0.97); box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15); }
+        .notice-board-left { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
+        .notice-board svg { stroke: #ffaa00; width: 22px; height: 22px; stroke-width: 2.5; }
+        .notice-text { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #cbd5e1; transition: color 0.3s; }
+        
+        .req-badge {
+            background: #ef4444; color: #fff; font-family: 'Montserrat', sans-serif;
+            font-size: 12px; font-weight: 900; min-width: 24px; height: 24px;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 12px; padding: 0 6px; box-shadow: 0 0 0 2px #111;
+        }
+
+        /* --- GAMES ARENA --- */
+        .arena-section { padding: 24px 20px; }
+        .section-title {
+            font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 900;
+            margin-bottom: 18px; color: #111; text-transform: uppercase;
+        }
+
+        .game-card {
+            display: block; background: #ffffff; border: 3px solid #111; 
+            border-radius: 20px; overflow: hidden; text-decoration: none;
+            margin-bottom: 24px; box-shadow: 6px 6px 0px rgba(17, 17, 17, 0.15); 
+            transform: translate3d(0,0,0);
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.3s;
+            will-change: transform;
+        }
+        .game-card:active {
+            transform: scale(0.96) translate3d(0,0,0);
+            box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15); 
+        }
+
+        .game-banner { width: 100%; height: 170px; background: #e2e8f0; position: relative; border-bottom: 3px solid #111; }
+        .game-banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease; display: block; }
+
+        .game-info { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .game-info h3 { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; color: #111; text-transform: uppercase; }
+        .play-btn {
+            background: #6366f1; color: #ffffff; padding: 8px 20px;
+            border-radius: 12px; border: 2px solid #111; font-weight: 800;
+            font-size: 13px; box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.3);
+        }
+
+        /* --- BOTTOM NAVIGATION --- */
+        .bottom-nav-container {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translate3d(0, 150%, 0);
+            width: 90%; max-width: 400px; background: #ffffff; border: 3px solid #111; border-radius: 28px;
+            display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 8px 0px rgba(17, 17, 17, 0.15); 
+            z-index: 1000; transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1); 
+        }
+        .bottom-nav-container.show { transform: translateX(-50%) translate3d(0, 0, 0); }
+
+        .nav-bubble {
+            position: absolute; top: 8px; bottom: 8px; left: 0; background: #111; border-radius: 20px; z-index: 0;
+            will-change: transform, width; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+        }
+
+        .nav-item {
+            position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+            text-decoration: none; color: #64748b; font-weight: 700; font-size: 11px; padding: 10px 0; border-radius: 20px; transition: color 0.3s ease;
+        }
+
+        .nav-item svg { width: 22px; height: 22px; stroke-width: 2.5; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .nav-item:active svg { transform: scale(0.85); }
+        .nav-item.active { color: #ffffff; }
+        .nav-item.active svg { stroke: #ffffff; fill: rgba(255, 255, 255, 0.15); }
+    </style>
+</head>
+<body>
+
+    <header id="islandHeader">
+        <div class="header-left">
+            <div class="logo-box skeleton" id="skeleton-logo">
+                <img src="logo.jpg" alt="Logo" id="logo-img">
+            </div>
+            <div>
+                <div class="user-greeting">Welcome back</div>
+                <div class="user-name skeleton" id="skeleton-name">Loading...</div>
+            </div>
+        </div>
+        <div class="balance-box skeleton" id="skeleton-balance">
+            <svg viewBox="0 0 24 24">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+                <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+                <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+            </svg>
+            <span id="balance-text" style="margin-left: 2px;">₹0</span>
+        </div>
+    </header>
+
+    <div class="notice-wrapper">
+        <a href="game-request.html">
+            <div class="notice-board skeleton" id="skeleton-notice">
+                <div class="notice-board-left">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <div class="notice-text" id="notice-text">Checking for notifications...</div>
+                </div>
+                <div class="req-badge" id="req-badge" style="display: none;">0</div>
+            </div>
+        </a>
+    </div>
+
+    <main class="arena-section">
+        <h2 class="section-title">Select Arena</h2>
+        
+        <a href="bgmi.html" class="game-card">
+            <div class="game-banner skeleton" id="skeleton-bgmi">
+                <img src="bgmi.jpg" alt="BGMI" id="img-bgmi">
+            </div>
+            <div class="game-info">
+                <h3>BATTLEGROUNDS MOBILE INDIA</h3>
+                <div class="play-btn">PLAY</div>
+            </div>
+        </a>
+
+        <a href="ffmax.html" class="game-card">
+            <div class="game-banner skeleton" id="skeleton-ff">
+                <img src="ffmax.jpg" alt="Free Fire Max" id="img-ff">
+            </div>
+            <div class="game-info">
+                <h3>FREE FIRE MAX</h3>
+                <div class="play-btn">PLAY</div>
+            </div>
+        </a>
+    </main>
+
+    <nav class="bottom-nav-container" id="bottomNav">
+        <div class="nav-bubble" id="navBubble"></div>
+
+        <a href="home.html" class="nav-item active" id="nav-home">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </a>
+        <a href="matches.html" class="nav-item" id="nav-matches">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span>Matches</span>
+        </a>
+        <a href="wallet.html" class="nav-item" id="nav-wallet">
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            <span>Wallet</span>
+        </a>
+        <a href="profile.html" class="nav-item" id="nav-profile">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
+            authDomain: "zxtorut-e.firebaseapp.com",
+            databaseURL: "https://zxtorut-e-default-rtdb.firebaseio.com",
+            projectId: "zxtorut-e",
+            storageBucket: "zxtorut-e.firebasestorage.app",
+            messagingSenderId: "913962754970",
+            appId: "1:913962754970:web:ce2a90972d6cf459f0d023"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // --- HARDWARE ACCELERATED BUBBLE LOGIC ---
+        function updateBubblePosition(activeElement) {
+            if(!activeElement) return;
+            const bubble = document.getElementById('navBubble');
+            const container = document.getElementById('bottomNav');
+            
+            const containerRect = container.getBoundingClientRect();
+            const elementRect = activeElement.getBoundingClientRect();
+            
+            const offsetX = elementRect.left - containerRect.left;
+            
+            bubble.style.transform = `translate3d(${offsetX}px, 0, 0)`;
+            bubble.style.width = `${elementRect.width}px`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const navContainer = document.getElementById('bottomNav');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            setTimeout(() => { 
+                document.getElementById('islandHeader').classList.add('show');
+                navContainer.classList.add('show'); 
+                updateBubblePosition(document.querySelector('.nav-item.active'));
+            }, 100);
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    const targetUrl = item.getAttribute('href');
+
+                    navItems.forEach(n => n.classList.remove('active'));
+                    item.classList.add('active');
+                    updateBubblePosition(item);
+
+                    if(targetUrl && targetUrl !== '#') {
+                        setTimeout(() => { window.location.href = targetUrl; }, 250); 
+                    }
+                });
+            });
+            
+            window.addEventListener('resize', () => {
+                updateBubblePosition(document.querySelector('.nav-item.active'));
+            });
+
+            // Image loading
+            ['logo-img', 'img-bgmi', 'img-ff'].forEach(id => {
+                const img = document.getElementById(id);
+                if (img) {
+                    img.onload = () => { img.style.opacity = '1'; img.parentElement.classList.remove('skeleton'); };
+                    setTimeout(() => { img.style.opacity = '1'; img.parentElement.classList.remove('skeleton'); }, 1000);
+                }
+            });
+        });
+
+        // --- FIREBASE LOGIC ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const nameEl = document.getElementById('skeleton-name');
+                nameEl.innerText = user.displayName || user.email.split('@')[0];
+                nameEl.classList.remove('skeleton');
+
+                // Balance Listener
+                const balanceRef = ref(db, 'users/' + user.uid + '/balance');
+                get(balanceRef).then((snapshot) => { if (!snapshot.exists()) set(balanceRef, 0); });
+                onValue(balanceRef, (snapshot) => {
+                    document.getElementById('balance-text').innerText = `₹${snapshot.val() || 0}`;
+                    document.getElementById('skeleton-balance').classList.remove('skeleton');
+                });
+
+                // Pending Requests Listener (Notification Bar)
+                const requestsRef = ref(db, 'game_requests/' + user.uid);
+                onValue(requestsRef, (snapshot) => {
+                    let pendingCount = 0;
+                    if (snapshot.exists()) {
+                        const reqs = snapshot.val();
+                        Object.values(reqs).forEach(r => {
+                            if (r.status === 'pending') pendingCount++;
+                        });
+                    }
+
+                    const noticeText = document.getElementById('notice-text');
+                    const badge = document.getElementById('req-badge');
+                    document.getElementById('skeleton-notice').classList.remove('skeleton');
+
+                    if (pendingCount > 0) {
+                        noticeText.innerText = `You have pending match request${pendingCount > 1 ? 's' : ''}!`;
+                        noticeText.style.color = "#fff";
+                        badge.innerText = pendingCount;
+                        badge.style.display = "flex";
+                    } else {
+                        noticeText.innerText = "🔥 Welcome to ZxTORUT eSPORTS!";
+                        noticeText.style.color = "#cbd5e1";
+                        badge.style.display = "none";
+                    }
+                });
+
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

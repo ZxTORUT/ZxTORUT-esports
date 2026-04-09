@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZxTORUT eSPORTS - Wallet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base Reset & Theme */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            background-color: #f0f2f5;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px; color: #111; font-family: 'Inter', sans-serif;
+            min-height: 100vh; padding-bottom: 120px; overflow-x: hidden;
+        }
+
+        /* --- SKELETON --- */
+        .skeleton {
+            background: #e2e8f0; background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 400% 100%; animation: skeleton-loading 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            border-radius: 8px; color: transparent !important; pointer-events: none;
+        }
+        .skeleton * { visibility: hidden; }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* --- HEADER --- */
+        header {
+            position: sticky; top: 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+            margin: 0 16px 24px 16px; padding: 10px 14px 10px 10px; background: #ffffff; border: 3px solid #111; border-radius: 40px; 
+            box-shadow: 0 12px 25px rgba(0,0,0,0.08), 0 6px 0px rgba(17, 17, 17, 0.15); 
+            transform: translate3d(0, -150%, 0); transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1);
+        }
+        header.show { transform: translate3d(0, 0, 0); }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        
+        .logo-box {
+            width: 46px !important; height: 46px !important; min-width: 46px !important; border-radius: 50% !important; 
+            background: #fff; border: 2.5px solid #111; box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15); 
+            display: block !important; position: relative !important; overflow: hidden !important; flex-shrink: 0;
+        }
+        .logo-box img {
+            width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: 50% !important;
+            position: absolute !important; top: 0 !important; left: 0 !important; opacity: 0; transition: opacity 0.5s ease;
+        }
+
+        .user-greeting { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .user-name { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 900; color: #111; min-width: 90px; letter-spacing: -0.5px; }
+
+        /* --- WALLET HERO CARD --- */
+        .container { padding: 0 20px; }
+        
+        .wallet-card {
+            background: #111; color: #fff; border: 3px solid #111; border-radius: 24px; padding: 24px;
+            margin-bottom: 24px; box-shadow: 6px 6px 0px rgba(17, 17, 17, 0.15); position: relative; overflow: hidden;
+        }
+        .wallet-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%); border-radius: 50%;
+        }
+
+        .security-badge {
+            display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px;
+        }
+        .security-badge svg { width: 14px; height: 14px; fill: #34C759; }
+
+        .balance-label { font-size: 13px; color: #cbd5e1; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .balance-amount { font-family: 'Montserrat', sans-serif; font-size: 42px; font-weight: 900; letter-spacing: -1px; margin-bottom: 24px; display: flex; align-items: center; gap: 4px;}
+        .balance-amount span { font-size: 24px; color: #94a3b8; }
+
+        .wallet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-action {
+            padding: 14px; border-radius: 16px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px;
+            text-transform: uppercase; cursor: pointer; text-align: center; text-decoration: none; transition: transform 0.1s;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-action:active { transform: scale(0.96); }
+        .btn-deposit { background: #34C759; color: #111; border: 2.5px solid #111; box-shadow: 3px 3px 0px rgba(52, 199, 89, 0.3); }
+        .btn-withdraw { background: #ffffff; color: #111; border: 2.5px solid #111; box-shadow: 3px 3px 0px rgba(255, 255, 255, 0.2); }
+        .btn-action svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 3; fill: none; }
+
+        /* --- TRANSACTION HISTORY --- */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .section-title { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 900; color: #111; text-transform: uppercase; }
+        .history-limit { font-size: 12px; font-weight: 700; color: #64748b; background: #e2e8f0; padding: 4px 10px; border-radius: 12px; }
+
+        .txn-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .txn-row {
+            background: #ffffff; border: 2.5px solid #e2e8f0; border-radius: 16px; padding: 14px;
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+            transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+        }
+        .txn-row:active { transform: scale(0.97); border-color: #111; box-shadow: 3px 3px 0px rgba(17, 17, 17, 0.1); }
+
+        .txn-left { display: flex; align-items: center; gap: 12px; }
+        .txn-icon {
+            width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+        }
+        .txn-icon.in { background: #e6f9ec; color: #34C759; }
+        .txn-icon.out { background: #fef2f2; color: #ef4444; }
+        .txn-icon.game { background: #fff7ed; color: #f97316; }
+        .txn-icon.reward { background: #fdfce8; color: #eab308; }
+        .txn-icon.refund { background: #e0e7ff; color: #6366f1; } /* Added Refund Purple */
+        .txn-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+        .txn-details { display: flex; flex-direction: column; }
+        .txn-title { font-weight: 800; font-size: 14px; color: #111; margin-bottom: 2px; }
+        .txn-date { font-size: 11px; font-weight: 600; color: #64748b; }
+
+        .txn-right { text-align: right; }
+        .txn-amount { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 900; }
+        .txn-amount.pos { color: #34C759; }
+        .txn-amount.neg { color: #111; }
+        .txn-status { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 4px; padding: 2px 6px; border-radius: 6px; display: inline-block; }
+        .status-success { background: #e6f9ec; color: #34C759; }
+        .status-pending { background: #fef9c3; color: #ca8a04; }
+        .status-rejected { background: #fef2f2; color: #ef4444; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; font-weight: 600; font-size: 14px; border: 2.5px dashed #cbd5e1; border-radius: 16px;}
+
+        /* --- APPLE PAY RECEIPT POPUP --- */
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 2000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .popup-overlay.show { opacity: 1; pointer-events: auto; }
+        .popup-sheet {
+            background: #ffffff; width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 35px 35px 0 0; border: 3px solid #111; border-bottom: none;
+            text-align: center; transform: translate3d(0, 100%, 0); transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        .popup-overlay.show .popup-sheet { transform: translate3d(0, 0, 0); }
+
+        .receipt-icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 16px; display: flex; justify-content: center; align-items: center; border: 3px solid; }
+        .receipt-icon svg { width: 32px; height: 32px; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .receipt-amount { font-family: 'Montserrat', sans-serif; font-size: 36px; font-weight: 900; color: #111; margin-bottom: 4px; letter-spacing: -1px; }
+        .receipt-title { font-size: 15px; font-weight: 700; color: #64748b; margin-bottom: 24px; }
+
+        .receipt-box { background: #f8f9fa; border: 2.5px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 24px; }
+        .receipt-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1.5px dashed #cbd5e1; }
+        .receipt-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .receipt-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .receipt-val { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 800; color: #111; }
+        .receipt-val.highlight { color: #6366f1; font-size: 15px; }
+
+        .btn-close { width: 100%; padding: 16px; background: #f1f5f9; color: #111; border-radius: 16px; border: 2.5px solid #111; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; text-transform: uppercase; cursor: pointer; transition: transform 0.1s; }
+        .btn-close:active { transform: scale(0.96); }
+
+        /* --- BOTTOM NAVIGATION --- */
+        .bottom-nav-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translate3d(0, 150%, 0); width: 90%; max-width: 400px; background: #ffffff; border: 3px solid #111; border-radius: 28px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 8px 0px rgba(17, 17, 17, 0.15); z-index: 1000; transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1.1); }
+        .bottom-nav-container.show { transform: translateX(-50%) translate3d(0, 0, 0); }
+        .nav-bubble { position: absolute; top: 8px; bottom: 8px; left: 0; background: #111; border-radius: 20px; z-index: 0; will-change: transform, width; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+        .nav-item { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: #64748b; font-weight: 700; font-size: 11px; padding: 10px 0; border-radius: 20px; }
+        .nav-item svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+        .nav-item:active svg { transform: scale(0.85); }
+        .nav-item.active { color: #ffffff; }
+        .nav-item.active svg { stroke: #ffffff; fill: rgba(255, 255, 255, 0.15); }
+    </style>
+</head>
+<body>
+
+    <div class="popup-overlay" id="receiptOverlay" onclick="closePopup('receiptOverlay', event)">
+        <div class="popup-sheet" onclick="event.stopPropagation()">
+            <div class="receipt-icon" id="popIconBox"></div>
+            
+            <div class="receipt-amount" id="popAmount">₹0</div>
+            <div class="receipt-title" id="popTitle">Transaction Detail</div>
+
+            <div class="receipt-box">
+                <div class="receipt-row">
+                    <span class="receipt-label">Status</span>
+                    <span class="receipt-val" id="popStatus" style="text-transform: uppercase;">Successful</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Date & Time</span>
+                    <span class="receipt-val" id="popDate">--</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Payment Method</span>
+                    <span class="receipt-val" id="popMethod">Wallet Auto</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Reference ID</span>
+                    <span class="receipt-val" id="popRef" style="font-size: 11px; letter-spacing: 1px;">--</span>
+                </div>
+                
+                <div class="receipt-row" id="popRemarkRow" style="display: none; flex-direction: column; align-items: flex-start; gap: 6px;">
+                    <span class="receipt-label">Admin Remark</span>
+                    <span class="receipt-val" id="popRemark" style="font-size: 12px; color: #ef4444; line-height: 1.4; text-transform: none; text-align: left;">--</span>
+                </div>
+
+                <div class="receipt-row" style="margin-top: 4px; border-top: 2px solid #e2e8f0; border-bottom: none; padding-bottom: 0; padding-top: 14px;">
+                    <span class="receipt-label" style="color: #111;">Closing Balance</span>
+                    <span class="receipt-val highlight" id="popBalance">Unavailable</span>
+                </div>
+            </div>
+
+            <button class="btn-close" onclick="document.getElementById('receiptOverlay').classList.remove('show')">Close Receipt</button>
+        </div>
+    </div>
+
+    <header id="islandHeader">
+        <div class="header-left">
+            <div class="logo-box skeleton" id="avatarInitial">
+                <img src="logo.jpg" alt="Logo" id="logo-img">
+            </div>
+            <div>
+                <div class="user-greeting">Financial Center</div>
+                <div class="user-name skeleton" id="header-name">Loading...</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div class="wallet-card">
+            <div class="security-badge">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                Secure with ZxTORUT Wallet
+            </div>
+            
+            <div class="balance-label">Available Balance</div>
+            <div class="balance-amount skeleton" id="main-balance">
+                <span>₹</span><span style="color: #fff; font-size: 42px;" id="main-balance-val">0</span>
+            </div>
+
+            <div class="wallet-actions">
+                <a href="deposit.html" class="btn-action btn-deposit">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Deposit
+                </a>
+                <a href="withdraw.html" class="btn-action btn-withdraw">
+                    <svg viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                    Withdraw
+                </a>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2 class="section-title">History</h2>
+            <div class="history-limit">Recent Activity</div>
+        </div>
+
+        <div class="txn-list" id="txnContainer">
+            <div class="txn-row skeleton" style="height: 76px;"></div>
+            <div class="txn-row skeleton" style="height: 76px;"></div>
+            <div class="txn-row skeleton" style="height: 76px;"></div>
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav-container" id="bottomNav">
+        <div class="nav-bubble" id="navBubble"></div>
+        <a href="home.html" class="nav-item" id="nav-home">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </a>
+        <a href="matches.html" class="nav-item" id="nav-matches">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span>Matches</span>
+        </a>
+        <a href="wallet.html" class="nav-item active" id="nav-wallet">
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+            <span>Wallet</span>
+        </a>
+        <a href="profile.html" class="nav-item" id="nav-profile">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
+            authDomain: "zxtorut-e.firebaseapp.com",
+            databaseURL: "https://zxtorut-e-default-rtdb.firebaseio.com",
+            projectId: "zxtorut-e",
+            storageBucket: "zxtorut-e.firebasestorage.app",
+            messagingSenderId: "913962754970",
+            appId: "1:913962754970:web:ce2a90972d6cf459f0d023"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let myTransactions = [];
+
+        // --- NAVIGATION BUBBLE ---
+        function updateBubblePosition(activeElement) {
+            if(!activeElement) return;
+            const bubble = document.getElementById('navBubble');
+            const container = document.getElementById('bottomNav');
+            const offsetX = activeElement.getBoundingClientRect().left - container.getBoundingClientRect().left;
+            bubble.style.transform = `translate3d(${offsetX}px, 0, 0)`;
+            bubble.style.width = `${activeElement.getBoundingClientRect().width}px`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => { 
+                document.getElementById('islandHeader').classList.add('show');
+                document.getElementById('bottomNav').classList.add('show'); 
+                updateBubblePosition(document.querySelector('.nav-item.active'));
+            }, 100);
+
+            const img = document.getElementById('logo-img');
+            if (img) {
+                img.onload = () => { img.style.opacity = '1'; img.parentElement.classList.remove('skeleton'); };
+                setTimeout(() => { img.style.opacity = '1'; img.parentElement.classList.remove('skeleton'); }, 1000);
+            }
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    const targetUrl = item.getAttribute('href');
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    item.classList.add('active');
+                    updateBubblePosition(item);
+                    if(targetUrl && targetUrl !== '#' && targetUrl !== 'wallet.html') {
+                        setTimeout(() => { window.location.href = targetUrl; }, 250); 
+                    }
+                });
+            });
+        });
+
+        // --- POPUP CONTROLS ---
+        window.closePopup = (id, e) => { if(e.target.id === id) document.getElementById(id).classList.remove('show'); };
+
+        window.openReceipt = (txnIndex) => {
+            const txn = myTransactions[txnIndex];
+            if(!txn) return;
+
+            const d = new Date(txn.timestamp);
+            document.getElementById('popDate').innerText = d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+            
+            let displayTitle = txn.title;
+            if (displayTitle === "Bank Withdrawal") displayTitle = "UPI Withdrawal";
+            
+            document.getElementById('popTitle').innerText = displayTitle;
+            document.getElementById('popMethod').innerText = txn.method || "System Auto";
+            document.getElementById('popRef').innerText = txn.txnRef || `UID-${txn.timestamp}`;
+            
+            document.getElementById('popBalance').innerText = (txn.closingBalance !== undefined && txn.closingBalance !== null) ? `₹${txn.closingBalance}` : 'Unavailable';
+
+            const remarkRow = document.getElementById('popRemarkRow');
+            const remarkText = document.getElementById('popRemark');
+            if (txn.remark || txn.message) {
+                remarkText.innerText = txn.remark || txn.message;
+                remarkRow.style.display = 'flex';
+            } else {
+                remarkRow.style.display = 'none';
+            }
+
+            const amountEl = document.getElementById('popAmount');
+            const iconBox = document.getElementById('popIconBox');
+            const statusEl = document.getElementById('popStatus');
+
+            amountEl.className = 'receipt-amount';
+            iconBox.className = 'receipt-icon';
+            statusEl.className = 'receipt-val';
+
+            // Determine Styles based on Type (Included Refund and Winner logic)
+            if (['deposit', 'reward', 'winner', 'refund'].includes(txn.type)) {
+                amountEl.innerText = `+₹${Math.abs(txn.amount)}`;
+                amountEl.style.color = '#34C759';
+                
+                if(txn.type === 'refund') {
+                    iconBox.style.color = '#6366f1'; iconBox.style.borderColor = '#6366f1'; iconBox.style.background = '#e0e7ff';
+                    iconBox.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>';
+                } else if(txn.type === 'reward' || txn.type === 'winner') {
+                    iconBox.style.color = '#eab308'; iconBox.style.borderColor = '#eab308'; iconBox.style.background = '#fdfce8';
+                    iconBox.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
+                } else {
+                    iconBox.style.color = '#34C759'; iconBox.style.borderColor = '#34C759'; iconBox.style.background = '#e6f9ec';
+                    iconBox.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>';
+                }
+            } else {
+                amountEl.innerText = `-₹${Math.abs(txn.amount)}`;
+                amountEl.style.color = '#111';
+                iconBox.style.color = '#111'; iconBox.style.borderColor = '#111'; iconBox.style.background = '#f1f5f9';
+                iconBox.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>';
+            }
+
+            statusEl.innerText = txn.status || 'Successful';
+            if(txn.status === 'pending') statusEl.style.color = '#ca8a04';
+            else if(txn.status === 'rejected') statusEl.style.color = '#ef4444';
+            else statusEl.style.color = '#34C759';
+
+            document.getElementById('receiptOverlay').classList.add('show');
+        };
+
+        // --- RENDER HISTORY ---
+        function renderHistory() {
+            const container = document.getElementById('txnContainer');
+            container.innerHTML = '';
+
+            if (myTransactions.length === 0) {
+                container.innerHTML = `<div class="empty-state">No recent transactions. Deposits, withdrawals, match entries, and rewards will appear here.</div>`;
+                return;
+            }
+
+            myTransactions.forEach((txn, index) => {
+                const isPositive = ['deposit', 'reward', 'winner', 'refund'].includes(txn.type);
+                const amountText = isPositive ? `+₹${Math.abs(txn.amount)}` : `-₹${Math.abs(txn.amount)}`;
+                const amountClass = isPositive ? 'pos' : 'neg';
+
+                let displayTitle = txn.title;
+                if (displayTitle === "Bank Withdrawal") displayTitle = "UPI Withdrawal";
+
+                let iconClass = 'out';
+                let svgIcon = '<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>';
+
+                if (isPositive && txn.type === 'deposit') { iconClass = 'in'; svgIcon = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>'; }
+                if (txn.type === 'join' || txn.type === 'game' || txn.type === 'match') { iconClass = 'game'; svgIcon = '<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect><path d="M6 12h4M8 10v4M15 13h.01M18 11h.01"></path></svg>'; }
+                if (txn.type === 'reward' || txn.type === 'winner') { iconClass = 'reward'; svgIcon = '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>'; }
+                if (txn.type === 'refund') { iconClass = 'refund'; svgIcon = '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>'; }
+
+                let statusBadge = '';
+                if(txn.status === 'pending') statusBadge = '<span class="txn-status status-pending">Pending</span>';
+                if(txn.status === 'rejected') statusBadge = '<span class="txn-status status-rejected">Rejected</span>';
+
+                const d = new Date(txn.timestamp);
+                const dateStr = d.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+
+                const row = document.createElement('div');
+                row.className = 'txn-row';
+                row.onclick = () => openReceipt(index);
+
+                row.innerHTML = `
+                    <div class="txn-left">
+                        <div class="txn-icon ${iconClass}">${svgIcon}</div>
+                        <div class="txn-details">
+                            <div class="txn-title">${displayTitle}</div>
+                            <div class="txn-date">${dateStr}</div>
+                        </div>
+                    </div>
+                    <div class="txn-right">
+                        <div class="txn-amount ${amountClass}">${amountText}</div>
+                        ${statusBadge}
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // --- FIREBASE DATA LOAD ---
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const nameEl = document.getElementById('header-name');
+            nameEl.innerText = user.displayName || user.email.split('@')[0];
+            nameEl.classList.remove('skeleton');
+
+            onValue(ref(db, 'users/' + user.uid + '/balance'), (snapshot) => {
+                const bal = snapshot.val() || 0;
+                document.getElementById('main-balance-val').innerText = bal;
+                document.getElementById('main-balance').classList.remove('skeleton');
+            });
+
+            // Expanded to fetch the last 20 transactions
+            const txnRef = query(ref(db, 'users/' + user.uid + '/transactions'), orderByChild('timestamp'), limitToLast(20));
+            onValue(txnRef, (snapshot) => {
+                myTransactions = [];
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        myTransactions.push(child.val());
+                    });
+                    myTransactions.sort((a, b) => b.timestamp - a.timestamp);
+                }
+                renderHistory();
+            });
+        });
+    </script>
+</body>
+</html>
