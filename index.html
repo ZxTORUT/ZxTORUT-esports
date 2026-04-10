@@ -56,7 +56,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Form is visible on load so it can be blurred by the overlay */
             transition: opacity 0.6s cubic-bezier(0.32, 0.72, 0, 1);
         }
 
@@ -460,6 +459,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
@@ -474,14 +474,45 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // Core User Data Generator (For old users without IDs)
+        async function ensureUserData(user) {
+            const userRef = ref(db, 'users/' + user.uid);
+            const snapshot = await get(userRef);
+            const data = snapshot.val();
+
+            if (!snapshot.exists() || !data.gamerId) {
+                const name = user.displayName || user.email.split('@')[0];
+                const gamerId = Math.floor(1000000 + Math.random() * 9000000).toString();
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                let refCode = name.substring(0,3).toUpperCase();
+                for(let i=0; i<4; i++) refCode += chars.charAt(Math.floor(Math.random() * chars.length));
+
+                await update(userRef, {
+                    displayName: name,
+                    email: user.email,
+                    gamerId: gamerId,
+                    referralCode: refCode,
+                    balance: (data && data.balance !== undefined) ? data.balance : 0
+                });
+            }
+        }
 
         let initialLoad = true;
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (initialLoad) {
                 if (user) {
+                    showPopup("Syncing Account", "Verifying player data...", "loading");
                     const name = user.displayName || user.email.split('@')[0];
-                    showPopup(`Welcome Back, ${name}`, "Redirecting to arena...", "success");
-                    setTimeout(() => { window.location.href = 'home.html'; }, 1500);
+                    
+                    try {
+                        await ensureUserData(user); // Ensure ID exists for old users
+                        showPopup(`Welcome Back, ${name}`, "Redirecting to arena...", "success");
+                        setTimeout(() => { window.location.href = 'home.html'; }, 1500);
+                    } catch(e) {
+                        showPopup("Sync Error", "Failed to load player data.", "error");
+                    }
                 } else {
                     hidePopup();
                 }
@@ -489,7 +520,6 @@
             }
         });
 
-        // --- NEW: Handle Forgot Password ---
         window.handleForgotPassword = async () => {
             const email = document.getElementById('loginEmail').value.trim();
             
@@ -498,7 +528,6 @@
                 return;
             }
 
-            // Define Custom Redirect URL
             const actionCodeSettings = {
                 url: 'https://zxtorut.in/forgot-pass.html',
                 handleCodeInApp: false
@@ -509,7 +538,6 @@
             try {
                 await sendPasswordResetEmail(auth, email, actionCodeSettings);
                 showPopup("Email Sent!", "Check your inbox for the password reset link.", "success");
-                // The popup will auto-hide in 3 seconds based on the 'success' override we can do, but let's hide it manually for safety
                 setTimeout(() => hidePopup(), 3000);
             } catch (error) {
                 let msg = error.code.replace('auth/', '').replace(/-/g, ' ');
@@ -528,9 +556,15 @@
                 return;
             }
 
+            showPopup("Creating Account", "Setting up your profile...", "loading");
+
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await updateProfile(userCredential.user, { displayName: name });
+                const user = userCredential.user;
+                
+                await updateProfile(user, { displayName: name });
+                await ensureUserData(user); // Generates ID safely
+
                 showPopup(`Welcome, ${name}`, "Account created. Redirecting to arena...", "success");
                 setTimeout(() => { window.location.href = 'home.html'; }, 2000);
             } catch (error) {
@@ -550,11 +584,18 @@
                 return;
             }
 
+            showPopup("Authenticating", "Verifying credentials...", "loading");
+
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const name = userCredential.user.displayName || email.split('@')[0];
+                const user = userCredential.user;
+                const name = user.displayName || email.split('@')[0];
+                
+                showPopup("Syncing Account", "Preparing your arena...", "loading");
+                await ensureUserData(user); // Ensure ID exists for old users
+                
                 showPopup(`Verified, ${name}`, "Redirecting to arena...", "success");
-                setTimeout(() => { window.location.href = 'home.html'; }, 2000);
+                setTimeout(() => { window.location.href = 'home.html'; }, 1500);
             } catch (error) {
                 showPopup("Access Denied", "Invalid email or password.", "error");
                 window.resetloginSlider(); 
