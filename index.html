@@ -141,6 +141,20 @@
         .eye-toggle:active { transform: translateY(-50%) scale(0.85); }
         .eye-toggle.active { fill: #6366f1; }
 
+        /* Forgot Password Link */
+        .forgot-pass {
+            text-align: right;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6366f1;
+            cursor: pointer;
+            margin-top: -10px;
+            margin-bottom: 16px;
+            transition: color 0.2s;
+            text-transform: uppercase;
+        }
+        .forgot-pass:active { color: #111; }
+
         /* --- ULTRA PREMIUM SLIDE TO CONFIRM BUTTON --- */
         .slide-container {
             position: relative;
@@ -148,7 +162,7 @@
             height: 64px;
             background: #e2e8f0;
             border-radius: 32px;
-            margin-top: 15px;
+            margin-top: 5px;
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -226,7 +240,6 @@
             background: rgba(0,0,0,0.45); 
             display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none;
             transition: opacity 0.5s ease; z-index: 1000; 
-            /* Premium deep frosted glass effect over the form */
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
         .apple-popup-overlay.show { opacity: 1; pointer-events: auto; }
@@ -242,6 +255,7 @@
             width: 70px; height: 70px; border-radius: 50%; border: 3.5px solid #34C759; margin: 0 auto 25px; display: flex; justify-content: center; align-items: center;
         }
         .tick-circle.error { border-color: #FF3B30; }
+        .tick-circle.info { border-color: #6366f1; }
 
         /* Smooth Loading Spinner for Initial Check */
         .tick-circle.loading {
@@ -252,9 +266,11 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .tick-circle svg {
-            width: 35px; height: 35px; fill: none; stroke: #34C759; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 50; stroke-dashoffset: 50; transition: stroke-dashoffset 0.6s cubic-bezier(0.32, 0.72, 0, 1) 0.3s;
+            width: 35px; height: 35px; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 50; stroke-dashoffset: 50; transition: stroke-dashoffset 0.6s cubic-bezier(0.32, 0.72, 0, 1) 0.3s;
         }
+        .tick-circle.success svg { stroke: #34C759; }
         .tick-circle.error svg { stroke: #FF3B30; }
+        .tick-circle.info svg { stroke: #6366f1; }
         .apple-popup-overlay.show .tick-circle svg { stroke-dashoffset: 0; }
 
         .popup-msg { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; color: #111; margin-bottom: 10px; }
@@ -286,6 +302,8 @@
                     <svg class="eye-toggle" onclick="togglePassword('loginPassword', this)" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
                 </div>
                 
+                <div class="forgot-pass" onclick="handleForgotPassword()">Forgot Password?</div>
+                
                 <div class="slide-container" id="loginSlideContainer">
                     <div class="slide-fill" id="loginSlideFill"></div>
                     <div class="slide-text" id="loginSlideText">Slide to Login</div>
@@ -301,7 +319,7 @@
                 <h2>Register</h2>
                 
                 <div class="input-group">
-                    <input type="text" id="regName" placeholder="Your Name (Don't use number)" autocomplete="off">
+                    <input type="text" id="regName" placeholder="Gamer Tag" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <input type="email" id="regEmail" placeholder="Email Address" autocomplete="off">
@@ -311,7 +329,7 @@
                     <svg class="eye-toggle" onclick="togglePassword('regPassword', this)" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
                 </div>
                 
-                <div class="slide-container" id="regSlideContainer">
+                <div class="slide-container" id="regSlideContainer" style="margin-top: 20px;">
                     <div class="slide-fill" id="regSlideFill"></div>
                     <div class="slide-text" id="regSlideText">Slide to Register</div>
                     <div class="slide-thumb" id="regSlideThumb">
@@ -350,7 +368,11 @@
                 iconBox.classList.add('loading');
                 iconBox.innerHTML = '';
             } else if (type === 'success') {
+                iconBox.classList.add('success');
                 iconBox.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>';
+            } else if (type === 'info') {
+                iconBox.classList.add('info');
+                iconBox.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
             } else {
                 iconBox.classList.add('error');
                 iconBox.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"></path></svg>';
@@ -358,7 +380,7 @@
 
             overlay.classList.add('show');
             
-            if (type === 'error') {
+            if (type === 'error' || type === 'info') {
                 setTimeout(() => { overlay.classList.remove('show'); }, 3000);
             }
         }
@@ -437,7 +459,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
@@ -466,6 +488,34 @@
                 initialLoad = false;
             }
         });
+
+        // --- NEW: Handle Forgot Password ---
+        window.handleForgotPassword = async () => {
+            const email = document.getElementById('loginEmail').value.trim();
+            
+            if (!email) {
+                showPopup("Missing Email", "Please enter your email address in the box above to reset your password.", "info");
+                return;
+            }
+
+            // Define Custom Redirect URL
+            const actionCodeSettings = {
+                url: 'https://zxtorut.in/forgot-pass.html',
+                handleCodeInApp: false
+            };
+
+            showPopup("Processing", "Generating secure reset link...", "loading");
+
+            try {
+                await sendPasswordResetEmail(auth, email, actionCodeSettings);
+                showPopup("Email Sent!", "Check your inbox for the password reset link.", "success");
+                // The popup will auto-hide in 3 seconds based on the 'success' override we can do, but let's hide it manually for safety
+                setTimeout(() => hidePopup(), 3000);
+            } catch (error) {
+                let msg = error.code.replace('auth/', '').replace(/-/g, ' ');
+                showPopup("Error", msg, "error");
+            }
+        };
 
         window.handleRegister = async () => {
             const name = document.getElementById('regName').value.trim();
