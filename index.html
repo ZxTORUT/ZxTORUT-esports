@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ZxTORUT eSPORTS</title>
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1684282886922085" crossorigin="anonymous"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         /* Base Reset & Theme */
@@ -341,9 +344,7 @@
         </div>
     </div>
 
-   
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1684282886922085"
-     crossorigin="anonymous">
+    <script>
         function flipCard() {
             document.getElementById('card').classList.toggle('is-flipped');
         }
@@ -478,7 +479,6 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Core User Data Generator (For old users without IDs)
         async function ensureUserData(user) {
             const userRef = ref(db, 'users/' + user.uid);
             const snapshot = await get(userRef);
@@ -509,7 +509,7 @@
                     const name = user.displayName || user.email.split('@')[0];
                     
                     try {
-                        await ensureUserData(user); // Ensure ID exists for old users
+                        await ensureUserData(user);
                         showPopup(`Welcome Back, ${name}`, "Redirecting to arena...", "success");
                         setTimeout(() => { window.location.href = 'home.html'; }, 1500);
                     } catch(e) {
@@ -565,7 +565,7 @@
                 const user = userCredential.user;
                 
                 await updateProfile(user, { displayName: name });
-                await ensureUserData(user); // Generates ID safely
+                await ensureUserData(user);
 
                 showPopup(`Welcome, ${name}`, "Account created. Redirecting to arena...", "success");
                 setTimeout(() => { window.location.href = 'home.html'; }, 2000);
@@ -594,7 +594,7 @@
                 const name = user.displayName || email.split('@')[0];
                 
                 showPopup("Syncing Account", "Preparing your arena...", "loading");
-                await ensureUserData(user); // Ensure ID exists for old users
+                await ensureUserData(user);
                 
                 showPopup(`Verified, ${name}`, "Redirecting to arena...", "success");
                 setTimeout(() => { window.location.href = 'home.html'; }, 1500);
