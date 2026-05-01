@@ -2,607 +2,157 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZxTORUT eSPORTS</title>
+    <title>QuickQR | Desktop Generator</title>
     
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1684282886922085" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* Base Reset & Theme */
-        * {
-            box-sizing: border-box;
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+
+        /* Forces the layout to stay wide like a desktop screen */
+        html, body {
+            min-width: 1200px; 
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent; 
+            overflow-x: auto; /* Allows horizontal scrolling if the screen is too small */
         }
 
-        body {
-            background-color: #f0f2f5;
-            background-image: 
-                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            color: #111;
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        /* Top Ad Section */
+        .ad-header-zone {
+            width: 100%;
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .main-content {
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-            font-family: 'Inter', sans-serif;
+            align-items: flex-start;
+            padding: 50px;
+            gap: 40px;
         }
-        
-        .brand-title {
+
+        .generator-card {
+            width: 500px;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: -1px;
-            margin-bottom: 30px;
-            text-transform: uppercase;
         }
 
-        .brand-title::after {
-            content: 'eSPORTS';
-            display: block;
-            font-size: 14px;
-            letter-spacing: 4px;
-            color: #6366f1;
-            margin-top: 2px;
-        }
-
-        /* Flip Card Container */
-        .scene {
-            width: 90%;
-            max-width: 420px;
-            perspective: 1500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: opacity 0.6s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-
-        .card {
-            width: 100%;
-            height: 540px;
-            position: relative;
-            transition: transform 0.85s cubic-bezier(0.32, 0.72, 0, 1); 
-            transform-style: preserve-3d;
-            will-change: transform;
-        }
-
-        .card.is-flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            background: #ffffff;
-            border: 3px solid #111;
-            border-radius: 24px;
-            padding: 40px 35px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08), 8px 8px 0px rgba(17, 17, 17, 0.1);
-        }
-
-        .card-face-back {
-            transform: rotateY(180deg);
-        }
-
-        h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: 26px;
-            margin-bottom: 25px;
-            color: #111;
-        }
-
-        /* Inputs */
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
+        h1 { font-size: 2rem; margin-bottom: 15px; color: #0f172a; }
+        p { color: #64748b; margin-bottom: 30px; }
 
         input {
             width: 100%;
-            padding: 16px 20px;
-            background: #f8f9fa;
+            padding: 15px;
             border: 2px solid #e2e8f0;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 500;
-            color: #111;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
             outline: none;
         }
 
-        input::placeholder { color: #94a3b8; }
-
-        input:focus {
-            background: #fff;
-            border-color: #111;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transform: translateY(-2px);
-        }
-
-        /* Animated Eye Icon */
-        .eye-toggle {
-            position: absolute;
-            right: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            fill: #94a3b8;
-            transition: fill 0.3s ease, transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-        .eye-toggle:active { transform: translateY(-50%) scale(0.85); }
-        .eye-toggle.active { fill: #6366f1; }
-
-        /* Forgot Password Link */
-        .forgot-pass {
-            text-align: right;
-            font-size: 12px;
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
             font-weight: 700;
-            color: #6366f1;
             cursor: pointer;
-            margin-top: -10px;
-            margin-bottom: 16px;
-            transition: color 0.2s;
-            text-transform: uppercase;
-        }
-        .forgot-pass:active { color: #111; }
-
-        /* --- ULTRA PREMIUM SLIDE TO CONFIRM BUTTON --- */
-        .slide-container {
-            position: relative;
             width: 100%;
-            height: 64px;
-            background: #e2e8f0;
-            border-radius: 32px;
-            margin-top: 5px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 3px 6px rgba(0,0,0,0.05);
-        }
-
-        .slide-text {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 14px;
-            font-weight: 800;
+            font-size: 1rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            pointer-events: none;
-            z-index: 1;
-            background: linear-gradient(90deg, #94a3b8 0%, #111 50%, #94a3b8 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: textShimmer 2.5s linear infinite;
-            transition: opacity 0.3s ease;
+            letter-spacing: 1px;
         }
 
-        @keyframes textShimmer { to { background-position: 200% center; } }
-
-        .slide-fill {
-            position: absolute;
-            top: 0; left: 0; bottom: 0;
-            width: 0;
-            background: linear-gradient(90deg, #3b82f6, #6366f1);
-            z-index: 0;
-            border-radius: 32px;
+        #qrcode {
+            margin-top: 30px;
+            padding: 15px;
+            background: #fff;
+            display: inline-block;
+            border: 1px solid #e2e8f0;
         }
 
-        .slide-thumb {
-            position: absolute;
-            left: 6px; top: 6px; bottom: 6px;
-            width: 52px; height: 52px;
-            background: #ffffff;
-            border-radius: 50%; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: grab;
-            z-index: 2;
-            touch-action: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1);
-            transform: translate3d(0, 0, 0); 
-            will-change: transform;
-            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1.1), background 0.3s, box-shadow 0.3s; 
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
         }
-
-        .slide-thumb:active { cursor: grabbing; }
-        .slide-thumb.dragging { transition: none; }
-
-        .slide-thumb svg {
-            width: 22px; height: 22px; fill: none; stroke: #111; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.3s;
-        }
-
-        .slide-thumb.success {
-            background: #34C759;
-            box-shadow: 0 4px 15px rgba(52, 199, 89, 0.4);
-        }
-
-        .slide-thumb.success svg { stroke: #ffffff; }
-
-        .toggle-link {
-            text-align: center; margin-top: 25px; font-size: 14px; color: #64748b; cursor: pointer; font-weight: 600; transition: color 0.2s ease;
-        }
-        .toggle-link:hover { color: #111; }
-
-        /* Extended Apple Pay Style Popup */
-        .apple-popup-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.45); 
-            display: flex; justify-content: center; align-items: flex-end; opacity: 0; pointer-events: none;
-            transition: opacity 0.5s ease; z-index: 1000; 
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        }
-        .apple-popup-overlay.show { opacity: 1; pointer-events: auto; }
-
-        .apple-popup {
-            background: #ffffff; width: 100%; max-width: 450px; min-height: 320px; padding: 60px 30px;
-            border-radius: 35px 35px 0 0; text-align: center; transform: translate3d(0, 100%, 0);
-            transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1); display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-        }
-        .apple-popup-overlay.show .apple-popup { transform: translate3d(0, 0, 0); }
-
-        .tick-circle {
-            width: 70px; height: 70px; border-radius: 50%; border: 3.5px solid #34C759; margin: 0 auto 25px; display: flex; justify-content: center; align-items: center;
-        }
-        .tick-circle.error { border-color: #FF3B30; }
-        .tick-circle.info { border-color: #6366f1; }
-
-        /* Smooth Loading Spinner for Initial Check */
-        .tick-circle.loading {
-            border-color: #e2e8f0;
-            border-top-color: #111;
-            animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        .tick-circle svg {
-            width: 35px; height: 35px; fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 50; stroke-dashoffset: 50; transition: stroke-dashoffset 0.6s cubic-bezier(0.32, 0.72, 0, 1) 0.3s;
-        }
-        .tick-circle.success svg { stroke: #34C759; }
-        .tick-circle.error svg { stroke: #FF3B30; }
-        .tick-circle.info svg { stroke: #6366f1; }
-        .apple-popup-overlay.show .tick-circle svg { stroke-dashoffset: 0; }
-
-        .popup-msg { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 800; color: #111; margin-bottom: 10px; }
-        .popup-submsg { font-size: 15px; color: #64748b; font-weight: 500; }
     </style>
 </head>
 <body>
 
-    <div class="apple-popup-overlay show" id="popupOverlay">
-        <div class="apple-popup">
-            <div class="tick-circle loading" id="popupIconBox"></div>
-            <div class="popup-msg" id="popupMessage">Authenticating</div>
-            <div class="popup-submsg" id="popupSubMessage">Checking secure credentials...</div>
+    <div class="ad-header-zone">
+        <script src="https://cursecrookadvantage.com/b5/7f/f6/b57ff69fcd29f684e28ccd3e70b7c3d7.js"></script>
+
+        <div id="container-09b717bee9b5e0fb0c7c2da8c203a067"></div>
+        <script async="async" data-cfasync="false" src="https://cursecrookadvantage.com/09b717bee9b5e0fb0c7c2da8c203a067/invoke.js"></script>
+
+        <script src="https://cursecrookadvantage.com/36/2d/3f/362d3f5e394d8aba8bfc000eef0ba1f4.js"></script>
+
+        <div>
+            <script>
+              atOptions = {
+                'key' : 'd3abf1434ea618a03e5e2f8f1c948ce0',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            </script>
+            <script src="https://cursecrookadvantage.com/d3abf1434ea618a03e5e2f8f1c948ce0/invoke.js"></script>
         </div>
     </div>
 
-    <div class="scene" id="authScene">
-        <div class="brand-title">ZxTORUT</div>
-        
-        <div class="card" id="card">
-            <div class="card-face">
-                <h2>Login</h2>
-                
-                <div class="input-group">
-                    <input type="email" id="loginEmail" placeholder="Email Address" autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="loginPassword" placeholder="Password">
-                    <svg class="eye-toggle" onclick="togglePassword('loginPassword', this)" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                </div>
-                
-                <div class="forgot-pass" onclick="handleForgotPassword()">Forgot Password?</div>
-                
-                <div class="slide-container" id="loginSlideContainer">
-                    <div class="slide-fill" id="loginSlideFill"></div>
-                    <div class="slide-text" id="loginSlideText">Slide to Login</div>
-                    <div class="slide-thumb" id="loginSlideThumb">
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </div>
-                </div>
+    <div class="main-content">
+        <div class="generator-card">
+            <h1>Desktop QR Generator</h1>
+            <p>High-speed generation for professional use.</p>
+            
+            <input type="text" id="text-input" placeholder="Enter URL or Text" value="https://google.com">
+            <button onclick="generateQR()">Generate Now</button>
 
-                <div class="toggle-link" onclick="flipCard()">New Player? Create Account</div>
-            </div>
-
-            <div class="card-face card-face-back">
-                <h2>Register</h2>
-                
-                <div class="input-group">
-                    <input type="text" id="regName" placeholder="Gamer Tag" autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <input type="email" id="regEmail" placeholder="Email Address" autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="regPassword" placeholder="Create Password">
-                    <svg class="eye-toggle" onclick="togglePassword('regPassword', this)" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                </div>
-                
-                <div class="slide-container" id="regSlideContainer" style="margin-top: 20px;">
-                    <div class="slide-fill" id="regSlideFill"></div>
-                    <div class="slide-text" id="regSlideText">Slide to Register</div>
-                    <div class="slide-thumb" id="regSlideThumb">
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </div>
-                </div>
-
-                <div class="toggle-link" onclick="flipCard()">Already have an account? Login</div>
-            </div>
+            <div id="qrcode"></div>
         </div>
     </div>
+
+    <footer>
+        &copy; 2026 QR Desktop Suite.
+    </footer>
 
     <script>
-        function flipCard() {
-            document.getElementById('card').classList.toggle('is-flipped');
-        }
-
-        function togglePassword(inputId, iconElement) {
-            const input = document.getElementById(inputId);
-            iconElement.classList.toggle('active');
-            input.type = input.type === "password" ? "text" : "password";
-        }
-
-        function showPopup(message, submessage, type = 'success') {
-            const overlay = document.getElementById('popupOverlay');
-            const msgBox = document.getElementById('popupMessage');
-            const submsgBox = document.getElementById('popupSubMessage');
-            const iconBox = document.getElementById('popupIconBox');
-
-            msgBox.innerText = message;
-            submsgBox.innerText = submessage;
-            
-            iconBox.className = 'tick-circle';
-            
-            if (type === 'loading') {
-                iconBox.classList.add('loading');
-                iconBox.innerHTML = '';
-            } else if (type === 'success') {
-                iconBox.classList.add('success');
-                iconBox.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>';
-            } else if (type === 'info') {
-                iconBox.classList.add('info');
-                iconBox.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
-            } else {
-                iconBox.classList.add('error');
-                iconBox.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"></path></svg>';
-            }
-
-            overlay.classList.add('show');
-            
-            if (type === 'error' || type === 'info') {
-                setTimeout(() => { overlay.classList.remove('show'); }, 3000);
-            }
-        }
-
-        function hidePopup() {
-            document.getElementById('popupOverlay').classList.remove('show');
-        }
-
-        // SLIDER LOGIC
-        function initSlider(type) {
-            const container = document.getElementById(`${type}SlideContainer`);
-            const thumb = document.getElementById(`${type}SlideThumb`);
-            const fill = document.getElementById(`${type}SlideFill`);
-            const text = document.getElementById(`${type}SlideText`);
-            
-            let isDragging = false, startX = 0, currentX = 0, maxSlide = 0, isSuccess = false;
-
-            const onStart = (e) => {
-                if (isSuccess) return;
-                isDragging = true;
-                maxSlide = container.offsetWidth - thumb.offsetWidth - 12; 
-                startX = (e.touches ? e.touches[0].clientX : e.clientX) - currentX;
-                thumb.classList.add('dragging');
-                text.style.opacity = '0.1';
-            };
-
-            const onMove = (e) => {
-                if (!isDragging) return;
-                currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
-                if (currentX < 0) currentX = 0;
-                if (currentX > maxSlide) currentX = maxSlide;
-                thumb.style.transform = `translate3d(${currentX}px, 0, 0)`;
-                fill.style.width = `${currentX + 32}px`;
-            };
-
-            const onEnd = () => {
-                if (!isDragging) return;
-                isDragging = false;
-                thumb.classList.remove('dragging');
-                
-                if (currentX >= maxSlide * 0.90) {
-                    currentX = maxSlide;
-                    thumb.style.transform = `translate3d(${maxSlide}px, 0, 0)`;
-                    fill.style.width = `100%`;
-                    thumb.classList.add('success');
-                    thumb.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>';
-                    text.innerText = "Authenticating...";
-                    text.style.opacity = '1'; text.style.color = '#ffffff'; text.style.background = 'none'; text.style.webkitTextFillColor = '#ffffff';
-                    isSuccess = true;
-                    
-                    if(type === 'login') window.handleLogin();
-                    if(type === 'reg') window.handleRegister();
-                } else {
-                    resetSliderUI();
-                }
-            };
-
-            const resetSliderUI = () => {
-                currentX = 0; isSuccess = false;
-                thumb.style.transform = `translate3d(0, 0, 0)`; fill.style.width = `0`;
-                text.style.opacity = '1'; text.innerText = type === 'login' ? 'Slide to Login' : 'Slide to Register';
-                text.style.background = 'linear-gradient(90deg, #94a3b8 0%, #111 50%, #94a3b8 100%)';
-                text.style.backgroundSize = '200% auto'; text.style.webkitBackgroundClip = 'text'; text.style.webkitTextFillColor = 'transparent';
-                thumb.classList.remove('success'); thumb.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-            };
-
-            window[`reset${type}Slider`] = resetSliderUI;
-
-            thumb.addEventListener('mousedown', onStart); thumb.addEventListener('touchstart', onStart, {passive: false});
-            window.addEventListener('mousemove', onMove); window.addEventListener('touchmove', onMove, {passive: false});
-            window.addEventListener('mouseup', onEnd); window.addEventListener('touchend', onEnd);
-        }
-
-        initSlider('login'); initSlider('reg');
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBvqJ7cnMj3QGNMrkPxkIcASTArTalF33w",
-            authDomain: "zxtorut-e.firebaseapp.com",
-            databaseURL: "https://zxtorut-e-default-rtdb.firebaseio.com",
-            projectId: "zxtorut-e",
-            storageBucket: "zxtorut-e.firebasestorage.app",
-            messagingSenderId: "913962754970",
-            appId: "1:913962754970:web:ce2a90972d6cf459f0d023",
-            measurementId: "G-1TC5K2FM1J"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-
-        async function ensureUserData(user) {
-            const userRef = ref(db, 'users/' + user.uid);
-            const snapshot = await get(userRef);
-            const data = snapshot.val();
-
-            if (!snapshot.exists() || !data.gamerId) {
-                const name = user.displayName || user.email.split('@')[0];
-                const gamerId = Math.floor(1000000 + Math.random() * 9000000).toString();
-                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                let refCode = name.substring(0,3).toUpperCase();
-                for(let i=0; i<4; i++) refCode += chars.charAt(Math.floor(Math.random() * chars.length));
-
-                await update(userRef, {
-                    displayName: name,
-                    email: user.email,
-                    gamerId: gamerId,
-                    referralCode: refCode,
-                    balance: (data && data.balance !== undefined) ? data.balance : 0
-                });
-            }
-        }
-
-        let initialLoad = true;
-        onAuthStateChanged(auth, async (user) => {
-            if (initialLoad) {
-                if (user) {
-                    showPopup("Syncing Account", "Verifying player data...", "loading");
-                    const name = user.displayName || user.email.split('@')[0];
-                    
-                    try {
-                        await ensureUserData(user);
-                        showPopup(`Welcome Back, ${name}`, "Redirecting to arena...", "success");
-                        setTimeout(() => { window.location.href = 'home.html'; }, 1500);
-                    } catch(e) {
-                        showPopup("Sync Error", "Failed to load player data.", "error");
-                    }
-                } else {
-                    hidePopup();
-                }
-                initialLoad = false;
-            }
+        const qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: "https://google.com",
+            width: 250,
+            height: 250,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
         });
 
-        window.handleForgotPassword = async () => {
-            const email = document.getElementById('loginEmail').value.trim();
-            
-            if (!email) {
-                showPopup("Missing Email", "Please enter your email address in the box above to reset your password.", "info");
-                return;
+        function generateQR() {
+            const input = document.getElementById("text-input").value;
+            if (input.trim() !== "") {
+                qrcode.clear();
+                qrcode.makeCode(input);
             }
-
-            const actionCodeSettings = {
-                url: 'https://zxtorut.in/forgot-pass.html',
-                handleCodeInApp: false
-            };
-
-            showPopup("Processing", "Generating secure reset link...", "loading");
-
-            try {
-                await sendPasswordResetEmail(auth, email, actionCodeSettings);
-                showPopup("Email Sent!", "Check your inbox for the password reset link.", "success");
-                setTimeout(() => hidePopup(), 3000);
-            } catch (error) {
-                let msg = error.code.replace('auth/', '').replace(/-/g, ' ');
-                showPopup("Error", msg, "error");
-            }
-        };
-
-        window.handleRegister = async () => {
-            const name = document.getElementById('regName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const password = document.getElementById('regPassword').value;
-
-            if (!name || !email || !password) {
-                showPopup("Missing Fields", "Please fill out all information.", "error");
-                window.resetregSlider(); 
-                return;
-            }
-
-            showPopup("Creating Account", "Setting up your profile...", "loading");
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                
-                await updateProfile(user, { displayName: name });
-                await ensureUserData(user);
-
-                showPopup(`Welcome, ${name}`, "Account created. Redirecting to arena...", "success");
-                setTimeout(() => { window.location.href = 'home.html'; }, 2000);
-            } catch (error) {
-                let msg = error.code.replace('auth/', '').replace(/-/g, ' ');
-                showPopup("Registration Failed", msg, "error");
-                window.resetregSlider(); 
-            }
-        };
-
-        window.handleLogin = async () => {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            if (!email || !password) {
-                showPopup("Missing Fields", "Please enter your email and password.", "error");
-                window.resetloginSlider(); 
-                return;
-            }
-
-            showPopup("Authenticating", "Verifying credentials...", "loading");
-
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                const name = user.displayName || email.split('@')[0];
-                
-                showPopup("Syncing Account", "Preparing your arena...", "loading");
-                await ensureUserData(user);
-                
-                showPopup(`Verified, ${name}`, "Redirecting to arena...", "success");
-                setTimeout(() => { window.location.href = 'home.html'; }, 1500);
-            } catch (error) {
-                showPopup("Access Denied", "Invalid email or password.", "error");
-                window.resetloginSlider(); 
-            }
-        };
+        }
     </script>
 </body>
 </html>
